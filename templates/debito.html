@@ -11,61 +11,67 @@
 {% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">Adicionar Débito</h1>
+    <div class="container mt-3">
+        <h1 class="mb-4 text-center">Adicionar Débito</h1>
 
-    <form class="container p-4 rounded shadow-lg bg-light" style="max-width: 600px;" id="debitoForm">
-        <div class="row">
-            <!-- Valor -->
-            <div class="col-md-6 mb-3">
-                <label for="valor" class="form-label">Valor</label>
-                <input type="number" class="form-control" id="valor" placeholder="Digite o valor" required>
+        <form class="p-4 rounded shadow-lg bg-light mx-auto" style="max-width: 600px;" id="debitoForm">
+            <div class="row">
+                <!-- Valor -->
+                <div class="col-md-6 mb-3">
+                    <label for="valor" class="form-label">Valor</label>
+                    <input type="number" class="form-control" id="valor" placeholder="Digite o valor" required>
+                </div>
+
+                <!-- Data -->
+                <div class="col-md-6 mb-3">
+                    <label for="data" class="form-label">Data</label>
+                    <input type="date" class="form-control" id="data" required>
+                </div>
             </div>
 
-            <!-- Data -->
-            <div class="col-md-6 mb-3">
-                <label for="data" class="form-label">Data</label>
-                <input type="date" class="form-control" id="data" required>
-            </div>
-        </div>
-
-        <!-- Descrição -->
-        <div class="mb-3">
-            <label for="descricao" class="form-label">Descrição</label>
-            <input type="text" class="form-control" id="descricao" placeholder="Ex: Conta de luz, Mercado" required>
-        </div>
-
-        <div class="row">
-            <!-- Tipo -->
-            <div class="col-md-6 mb-3">
-                <label for="tipo" class="form-label">Tipo</label>
-                <select class="form-select" id="tipo" required>
-                    <option value="" selected disabled>Selecione o tipo</option>
-                    <option value="boleto">Boleto</option>
-                    <option value="cartao">Cartão</option>
-                    <option value="pix">Pix</option>
-                    <option value="dinheiro">Dinheiro</option>
-                    <option value="outros">Outros</option>
-                </select>
+            <!-- Descrição -->
+            <div class="mb-3">
+                <label for="descricao" class="form-label">Descrição</label>
+                <input type="text" class="form-control" id="descricao" placeholder="Ex: Conta de luz, Aluguel" required>
             </div>
 
-            <!-- Categoria -->
-            <div class="col-md-6 mb-3">
-                <label for="categoria" class="form-label">Categoria</label>
-                <select class="form-select" id="categoria" required>
-                    <option value="" selected disabled>Selecione a categoria</option>
-                    <option value="alimentacao">Alimentação</option>
-                    <option value="moradia">Moradia</option>
-                    <option value="transporte">Transporte</option>
-                    <option value="lazer">Lazer</option>
-                    <option value="outros">Outros</option>
-                </select>
-            </div>
-        </div>
+            <div class="row">
+                <!-- Tipo -->
+                <div class="col-md-6 mb-3">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select class="form-select" id="tipo" required>
+                        <option value="" selected disabled>Selecione o tipo</option>
+                        <option value="conta">Conta</option>
+                        <option value="compra">Compra</option>
+                        <option value="emprestimo">Empréstimo</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
 
-        <!-- Botões -->
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-danger flex-grow-1">Salvar Débito</button>
-            <button type="reset" class="btn btn-secondary flex-grow-1">Limpar Dados</button>
+                <!-- Categoria -->
+                <div class="col-md-6 mb-3">
+                    <label for="categoria" class="form-label">Categoria</label>
+                    <select class="form-select" id="categoria" required>
+                        <option value="" selected disabled>Selecione a categoria</option>
+                        <option value="moradia">Moradia</option>
+                        <option value="alimentacao">Alimentação</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger flex-grow-1">Salvar Débito</button>
+                <button type="reset" class="btn btn-secondary flex-grow-1">Limpar Dados</button>
+            </div>
+        </form>
+
+        <!-- Tabela de Débitos -->
+        <div class="mt-4">
+            <h3 class="text-center">Tabela de Débitos</h3>
+            <!-- Sua tabela aqui -->
         </div>
-    </form>
+    </div>
 {% endblock %}
