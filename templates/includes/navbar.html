@@ -1,0 +1,23 @@
+<nav class="navbar navbar-expand-lg" style="background-color: #007BFF;">
+    <div class="container">
+        <a class="navbar-brand text-white fw-bold mx-auto" href="{{ url_for('home') }}">Controle Financeiro</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+    <div class="container">
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('credito') }}">Crédito</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('debito') }}">Débito</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
