@@ -13,6 +13,7 @@ def criar_banco():
             valor REAL NOT NULL,
             descricao TEXT NOT NULL,
             tipo TEXT NOT NULL,
+            categoria TEXT NOT NULL,
             data TEXT NOT NULL
         )
     """)

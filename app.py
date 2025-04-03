@@ -1,12 +1,9 @@
+import os.path
+
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
 app = Flask(__name__)
-
-
-# Conectar ao banco
-def conectar_banco():
-    return sqlite3.connect("financeiro.db")
 
 
 # Rota Home
@@ -25,13 +22,14 @@ def credito():
         categoria = request.form.get("categoria")
         data = request.form.get("data")
 
-        if valor and descricao and tipo and categoria and data:  # Garante que todos os campos estão preenchidos
-            conexao = conectar_banco()
+        if valor and descricao and tipo and categoria and data:
+            conexao = sqlite3.connect("financeiro.db")
             cursor = conexao.cursor()
             cursor.execute("INSERT INTO creditos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)",
                            (valor, descricao, tipo, categoria, data))
             conexao.commit()
             conexao.close()
+            print("Dados inseridos no banco!")  # Debug
 
         return redirect(url_for("credito"))
 
@@ -49,7 +47,7 @@ def debito():
         data = request.form.get("data")
 
         if valor and descricao and tipo and categoria and data:
-            conexao = conectar_banco()
+            conexao = sqlite3.connect("financeiro.db")
             cursor = conexao.cursor()
             cursor.execute("INSERT INTO debitos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)",
                            (valor, descricao, tipo, categoria, data))
@@ -63,4 +61,3 @@ def debito():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
