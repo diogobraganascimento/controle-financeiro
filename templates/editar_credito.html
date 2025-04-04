@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Crédito - Controle Financeiro{% endblock %}
+
+{% block alert %}
+    <div class="container mt-3">
+        <div class="alert alert-info text-center" role="alert">
+            <strong>Editar Créditos:</strong> Edite os dados de entradas de dinheiro.
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-4 text-center">Editar Crédito</h1>
+
+    <form method="POST" class="p-4 rounded shadow-lg bg-light mx-auto" style="max-width: 600px;">
+        <div class="row">
+            <!-- Valor -->
+            <div class="col-md-6 mb-3">
+                <label for="valor" class="form-label">Valor</label>
+                <input type="number" step="0.01" class="form-control" id="valor" name="valor" value="{{ credito[1] }}" required>
+            </div>
+
+            <!-- Data -->
+            <div class="col-md-6 mb-3">
+                <label for="data" class="form-label">Data</label>
+                <input type="date" class="form-control" id="data" name="data" value="{{ credito[5] }}" required>
+            </div>
+        </div>
+
+        <!-- Descrição -->
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição</label>
+            <input type="text" class="form-control" id="descricao" name="descricao" value="{{ credito[2] }}" required>
+        </div>
+
+        <div class="row">
+            <!-- Tipo -->
+            <div class="col-md-6 mb-3">
+                <label for="tipo" class="form-label">Tipo</label>
+                <select class="form-select" id="tipo" name="tipo" required>
+                    <option value="" disabled {% if not credito[3] %}selected{% endif %}>Selecione o tipo</option>
+                    <option value="salario" {% if credito[3] == 'salario' %}selected{% endif %}>Salário</option>
+                    <option value="pix" {% if credito[3] == 'pix' %}selected{% endif %}>Pix</option>
+                    <option value="transferencia" {% if credito[3] == 'transferencia' %}selected{% endif %}>Transferência</option>
+                    <option value="outros" {% if credito[3] == 'outros' %}selected{% endif %}>Outros</option>
+                </select>
+            </div>
+
+            <!-- Categoria -->
+            <div class="col-md-6 mb-3">
+                <label for="categoria" class="form-label">Categoria</label>
+                <select class="form-select" id="categoria" name="categoria" required>
+                    <option value="" disabled {% if not credito[4] %}selected{% endif %}>Selecione a categoria</option>
+                    <option value="trabalho" {% if credito[4] == 'trabalho' %}selected{% endif %}>Trabalho</option>
+                    <option value="investimento" {% if credito[4] == 'investimento' %}selected{% endif %}>Investimento</option>
+                    <option value="presente" {% if credito[4] == 'presente' %}selected{% endif %}>Presente</option>
+                    <option value="outros" {% if credito[4] == 'outros' %}selected{% endif %}>Outros</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('credito') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success">Salvar Alterações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

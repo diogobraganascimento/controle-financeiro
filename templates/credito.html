@@ -69,9 +69,37 @@
         </form>
 
         <!-- Tabela de Créditos -->
-        <div class="mt-4">
-            <h3 class="text-center">Tabela de Créditos</h3>
-            <!-- Sua tabela aqui -->
+        <div class="container mt-4">
+            <h2 class="text-center">Tabela de Créditos</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for credito in creditos %}
+                    <tr>
+                        <td>{{ credito[0] }}</td>
+                        <td>R$ {{ credito[1] }}</td>
+                        <td>{{ credito[2] }}</td>
+                        <td>{{ credito[3] }}</td>
+                        <td>{{ credito[4] }}</td>
+                        <td>{{ credito[5] }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_credito', id=credito[0]) }}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{{ url_for('excluir_credito', id=credito[0]) }}" class="btn btn-danger btn-sm">Excluir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+
     </div>
 {% endblock %}
