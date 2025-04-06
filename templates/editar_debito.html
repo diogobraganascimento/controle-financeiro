@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Débito - Controle Financeiro{% endblock %}
+
+{% block alert %}
+    <div class="container mt-3">
+        <div class="alert alert-info text-center" role="alert">
+            <strong>Editar Débitos:</strong> Edite os dados de saída de dinheiro.
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-4 text-center">Editar Débitos</h1>
+
+    <form method="POST" class="p-4 rounded shadow-lg bg-light mx-auto" style="max-width: 600px;">
+        <div class="row">
+            <!-- Valor -->
+            <div class="col-md-6 mb-3">
+                <label for="valor" class="form-label">Valor</label>
+                <input type="number" step="0.01" class="form-control" id="valor" name="valor" value="{{ debito[1] }}" required>
+            </div>
+
+            <!-- Data -->
+            <div class="col-md-6 mb-3">
+                <label for="data" class="form-label">Data</label>
+                <input type="date" class="form-control" id="data" name="data" value="{{ debito[5] }}" required>
+            </div>
+        </div>
+
+        <!-- Descrição -->
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição</label>
+            <input type="text" class="form-control" id="descricao" name="descricao" value="{{ debito[2] }}" required>
+        </div>
+
+        <div class="row">
+            <!-- Tipo -->
+            <div class="col-md-6 mb-3">
+                <label for="tipo" class="form-label">Tipo</label>
+                <select class="form-select" id="tipo" name="tipo" required>
+                   <option value="boleto" {% if debito[3] == 'boleto' %}selected{% endif %}>Boleto</option>
+                    <option value="cartao" {% if debito[3] == 'cartao' %}selected{% endif %}>Cartão</option>
+                    <option value="pix" {% if debito[3] == 'pix' %}selected{% endif %}>Pix</option>
+                    <option value="transferencia" {% if debito[3] == 'transferencia' %}selected{% endif %}>Transferência</option>
+                    <option value="outros" {% if debito[3] == 'outros' %}selected{% endif %}>Outros</option>
+                </select>
+            </div>
+
+            <!-- Categoria -->
+            <div class="col-md-6 mb-3">
+                <label for="categoria" class="form-label">Categoria</label>
+                <select class="form-select" id="categoria" name="categoria" required>
+                    <option value="" disabled {% if not debito[4] %}selected{% endif %}>Selecione a categoria</option>
+                    <option value="trabalho" {% if debito[4] == 'trabalho' %}selected{% endif %}>Trabalho</option>
+                    <option value="investimento" {% if debito[4] == 'investimento' %}selected{% endif %}>Investimento</option>
+                    <option value="presente" {% if debito[4] == 'presente' %}selected{% endif %}>Presente</option>
+                    <option value="outros" {% if debito[4] == 'outros' %}selected{% endif %}>Outros</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('debito') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success">Salvar Alterações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -69,9 +69,36 @@
         </form>
 
         <!-- Tabela de Débitos -->
-        <div class="mt-4">
-            <h3 class="text-center">Tabela de Débitos</h3>
-            <!-- Sua tabela aqui -->
+        <div class="container mt-4">
+            <h2 class="text-center">Tabela de Débitos</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for debito in debitos %}
+                    <tr>
+                        <td>{{ debito[0] }}</td>
+                        <td>R$ {{ debito[1] }}</td>
+                        <td>{{ debito[2] }}</td>
+                        <td>{{ debito[3] }}</td>
+                        <td>{{ debito[4] }}</td>
+                        <td>{{ debito[5] }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_debito', id=debito[0]) }}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{{ url_for('excluir_debito', id=debito[0]) }}" class="btn btn-danger btn-sm">Excluir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 {% endblock %}
