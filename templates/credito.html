@@ -86,7 +86,7 @@
                     {% for credito in creditos %}
                     <tr>
                         <td>{{ credito[0] }}</td>
-                        <td>R$ {{ credito[1] }}</td>
+                        <td>R$ {{ "%.2f"|format(credito[1]) }}</td>
                         <td>{{ credito[2] }}</td>
                         <td>{{ credito[3] }}</td>
                         <td>{{ credito[4] }}</td>

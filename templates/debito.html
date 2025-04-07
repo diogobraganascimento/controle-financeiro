@@ -86,7 +86,7 @@
                     {% for debito in debitos %}
                     <tr>
                         <td>{{ debito[0] }}</td>
-                        <td>R$ {{ debito[1] }}</td>
+                        <td>R$ {{ "%.2f"|format(debito[1]) }}</td>
                         <td>{{ debito[2] }}</td>
                         <td>{{ debito[3] }}</td>
                         <td>{{ debito[4] }}</td>

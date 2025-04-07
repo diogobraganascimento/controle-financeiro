@@ -7,20 +7,24 @@
     <p>Gerencie seus créditos e débitos de forma simples e eficiente.</p>
 
     <div class="container mt-5">
-    <div class="row justify-content-center">
-        <!-- Gráfico de Créditos -->
-        <div class="col-md-6 text-center">
-            <h4>Créditos</h4>
-            <canvas id="graficoCredito" width="300" height="300"></canvas>
-        </div>
+        <div class="row justify-content-center">
+            <!-- Gráfico de Créditos -->
+            <div class="col-md-6 text-center">
+                <h4>Créditos</h4>
+                <canvas id="graficoCredito" width="300" height="300"></canvas>
+            </div>
 
-        <!-- Gráfico de Débitos -->
-        <div class="col-md-6 text-center">
-            <h4>Débitos</h4>
-            <canvas id="graficoDebito" width="300" height="300"></canvas>
+            <!-- Gráfico de Débitos -->
+            <div class="col-md-6 text-center">
+                <h4>Débitos</h4>
+                <canvas id="graficoDebito" width="300" height="300"></canvas>
+            </div>
+        </div>
+        <div class="container mt-5">
+            <h4 class="text-center mb-3">Resumo do Mês</h4>
+            <canvas id="graficoComparativo" height="40"></canvas>
         </div>
     </div>
-</div>
 {% endblock %}
 {% block scripts %}
 <script>
@@ -60,6 +64,77 @@
             }
         },
         plugins: [textoCentral]
+    });
+
+
+    // Gráfico de comparação entre Crédito e Débito (barra horizontal)
+    document.addEventListener('DOMContentLoaded', function () {
+        const totalCreditos = {{ total_creditos }};
+        const totalDebitos = {{ total_debitos }};
+        const total = totalCreditos + totalDebitos;
+
+        const porcentagemCredito = (totalCreditos / total) * 100;
+        const porcentagemDebito = (totalDebitos / total) * 100;
+
+        const ctxComparacao = document.getElementById('graficoComparativo');
+        if (ctxComparacao) {
+            new Chart(ctxComparacao, {
+                type: 'bar',
+                data: {
+                    labels: [''],
+                    datasets: [
+                        {
+                            label: 'Créditos',
+                            data: [porcentagemCredito],
+                            backgroundColor: '#4caf50',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: 'Débitos',
+                            data: [porcentagemDebito],
+                            backgroundColor: '#f44336',
+                            stack: 'stack1'
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    elements: {
+                        bar: {
+                            barThickness: 100 // Mais fino
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const valor = context.dataset.label === 'Créditos' ? totalCreditos : totalDebitos;
+                                    return `${context.dataset.label}: R$ ${valor.toFixed(2)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                max: 100
+                            }
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
