@@ -5,4 +5,61 @@
 {% block content %}
     <h1 class="mb-4">Bem-vindo ao Controle Financeiro</h1>
     <p>Gerencie seus créditos e débitos de forma simples e eficiente.</p>
+
+    <div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Gráfico de Créditos -->
+        <div class="col-md-6 text-center">
+            <h4>Créditos</h4>
+            <canvas id="graficoCredito" width="300" height="300"></canvas>
+        </div>
+
+        <!-- Gráfico de Débitos -->
+        <div class="col-md-6 text-center">
+            <h4>Débitos</h4>
+            <canvas id="graficoDebito" width="300" height="300"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    const dadosCredito = {
+        labels: {{ creditos|map(attribute=0)|list|tojson }},
+        datasets: [{
+            data: {{ creditos|map(attribute=1)|list|tojson }},
+            backgroundColor: ['#4caf50', '#81c784', '#a5d6a7', '#c8e6c9']
+        }]
+    };
+
+    const dadosDebito = {
+        labels: {{ debitos|map(attribute=0)|list|tojson }},
+        datasets: [{
+            data: {{ debitos|map(attribute=1)|list|tojson }},
+            backgroundColor: ['#f44336', '#e57373', '#ef9a9a', '#ffcdd2']
+        }]
+    };
+
+    new Chart(document.getElementById('graficoCredito'), {
+        type: 'doughnut',
+        data: dadosCredito,
+        options: {
+            plugins: {
+                textoCentral: { total: {{ total_creditos }} }
+            }
+        },
+        plugins: [textoCentral]
+    });
+
+    new Chart(document.getElementById('graficoDebito'), {
+        type: 'doughnut',
+        data: dadosDebito,
+        options: {
+            plugins: {
+                textoCentral: { total: {{ total_debitos }} }
+            }
+        },
+        plugins: [textoCentral]
+    });
+</script>
 {% endblock %}

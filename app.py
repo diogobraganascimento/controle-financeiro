@@ -9,7 +9,26 @@ app = Flask(__name__)
 # Rota Home
 @app.route("/")
 def home():
-    return render_template("home.html")
+    conexao = sqlite3.connect('financeiro.db')
+    cursor = conexao.cursor()
+
+    # Pega os dados de crédito
+    cursor.execute("SELECT categoria, SUM(valor) FROM creditos GROUP BY categoria")
+    creditos = cursor.fetchall()
+    total_creditos = sum([row[1] for row in creditos])
+
+    # Pega os dados de débitos
+    cursor.execute("SELECT categoria, SUM(valor) FROM debitos GROUP BY categoria")
+    debitos = cursor.fetchall()
+    total_debitos = sum([row[1] for row in debitos])
+
+    conexao.close()
+
+    return render_template("home.html",
+                           creditos=creditos,
+                           debitos=debitos,
+                           total_creditos=total_creditos,
+                           total_debitos=total_debitos)
 
 
 # Rota para a página de crédito e salvar dados
