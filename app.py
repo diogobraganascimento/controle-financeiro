@@ -157,5 +157,24 @@ def excluir_debito(id):
     return redirect(url_for("debito"))
 
 
+# Rota para atualizar o status do débito
+@app.route('/atualizar-status-debito/<int:id>', methods=['POST'])
+def atualizar_status_debito(id):
+    status = request.form.get('status')
+    data_agendada = request.form.get('data_agendada', None)
+
+    conexao = sqlite3.connect('financeiro.db')
+    cursor = conexao.cursor()
+
+    if status == 'Agendado' and data_agendada:
+        cursor.execute("UPDATE debitos SET status = ?, data_agendada = ? WHERE id = ?", (status, data_agendada, id))
+    else:
+        cursor.execute("UPDATE debitos SET status = ?, data_agendada = NULL WHERE id = ?", (status, id))
+
+    conexao.commit()
+    conexao.close()
+    return redirect(url_for('debito'))
+
+
 if __name__ == "__main__":
     app.run(debug=True)

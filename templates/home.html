@@ -9,22 +9,32 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <!-- Gráfico de Créditos -->
-            <div class="col-md-6 text-center">
+            <div class="col-md-4 d-flex flex-column align-items-center mb-4">
                 <h4>Créditos</h4>
-                <canvas id="graficoCredito" width="300" height="300"></canvas>
+                <canvas id="graficoCredito" width="200" height="200"></canvas>
             </div>
 
             <!-- Gráfico de Débitos -->
-            <div class="col-md-6 text-center">
+            <div class="col-md-4 d-flex flex-column align-items-center mb-4">
                 <h4>Débitos</h4>
-                <canvas id="graficoDebito" width="300" height="300"></canvas>
+                <canvas id="graficoDebito" width="200" height="200"></canvas>
             </div>
         </div>
-        <div class="container mt-5">
-            <h4 class="text-center mb-3">Resumo do Mês</h4>
-            <canvas id="graficoComparativo" height="40"></canvas>
+
+        <!-- Resumo do Mês -->
+        <div class="container mt-12 d-flex flex-column align-items-center">
+            <h4 class="text-center mb-6">Resumo do Mês</h4>
+            <canvas id="graficoComparativo" height="25"></canvas>
         </div>
     </div>
+
+    <style>
+    canvas {
+        max-width: 300px;
+        max-height: 300px;
+    }
+    </style>
+
 {% endblock %}
 {% block scripts %}
 <script>

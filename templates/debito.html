@@ -69,18 +69,20 @@
         </form>
 
         <!-- Tabela de Débitos -->
-        <div class="container mt-4">
-            <h2 class="text-center">Tabela de Débitos</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Valor</th>
-                        <th>Descrição</th>
-                        <th>Tipo</th>
-                        <th>Categoria</th>
-                        <th>Data</th>
-                    </tr>
+        <div class="container mt-5">
+            <h2 class="text-center mb-4">Tabela de Débitos</h2>
+            <table class="table table-striped tabel-bordered text-center align-middle">
+                <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Valor</th>
+                    <th>Descrição</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
                 </thead>
                 <tbody>
                     {% for debito in debitos %}
@@ -91,11 +93,50 @@
                         <td>{{ debito[3] }}</td>
                         <td>{{ debito[4] }}</td>
                         <td>{{ debito[5] }}</td>
+
+                        <!-- Coluna de Status com formulário -->
+                        <td>
+                            <form method="POST" action="{{ url_for('atualizar_status_debito', id=debito[0]) }}">
+                                <select name="status" class="form-select" onchange="this.form.submit()">
+                                    <option value="Pendente" {% if debito[6] == 'Pendente' %}selected{% endif %}>Pendente</option>
+                                    <option value="Pago" {% if debito[6] == 'Pago' %}selected{% endif %}>Pago</option>
+                                    <option value="Agendado" {% if debito[6] == 'Agendado' %}selected{% endif %}>Agendado</option>
+                                </select>
+
+                                {% if debito[6] == 'Agendado' %}
+                                <input type="date" name="data_agendada" class="form-control mt-1" value="{{ debito[7] }}" onchange="this.form.submit()">
+                                {% endif %}
+                            </form>
+                        </td>
+
+
+                        <!-- Botões de ações -->
                         <td>
                             <a href="{{ url_for('editar_debito', id=debito[0]) }}" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="{{ url_for('excluir_debito', id=debito[0]) }}" class="btn btn-danger btn-sm">Excluir</a>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmarExclusao{{ debito[0] }}">
+                                Excluir
+                            </button>
                         </td>
                     </tr>
+
+                    <!-- Modal de confirmação de exclusão -->
+                    <div class="modal fade" id="confirmarExclusao{{ debito[0] }}" tabindex="-1" aria-labelledby="confirmarExclusaoLabel{{ debito[0] }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmarExclusaoLabel{{ debito[0] }}">Confirmar Exclusão</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Tem certeza que deseja excluir este Débito?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <a href="{{ url_for('excluir_debito', id=debito[0]) }}" class="btn btn-danger">Sim, excluir</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
                 </tbody>
             </table>
@@ -103,5 +144,16 @@
     </div>
 {% endblock %}
 
-sudo
-
+{% block script %}
+<script>
+    function toggleDataAgendada(selectElement, id) {
+        const input = document.getElementById(` dataAgendada${id}`);
+        if (selectElement.value === "Agendado") {
+            input.style.display = "block";
+        } else {
+            input.style.display = "none";
+            input.value = ""; // limpa a data se não for agendado
+        }
+    }
+</script>
+{% endblock %}

@@ -26,7 +26,9 @@ def criar_banco():
             descricao TEXT NOT NULL,
             tipo TEXT NOT NULL,
             categoria TEXT NOT NULL,
-            data TEXT NOT NULL
+            data TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'pendente',
+            data_agendada TEXT
         )
     """)
 
