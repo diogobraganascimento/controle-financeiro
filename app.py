@@ -7,28 +7,41 @@ app = Flask(__name__)
 
 
 # Rota Home
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
     conexao = sqlite3.connect('financeiro.db')
     cursor = conexao.cursor()
 
-    # Pega os dados de crédito
-    cursor.execute("SELECT categoria, SUM(valor) FROM creditos GROUP BY categoria")
-    creditos = cursor.fetchall()
-    total_creditos = sum([row[1] for row in creditos])
+    # Filtros
+    status_filtro = request.args.get("status")
+    data_filtro = request.args.get("data")
 
-    # Pega os dados de débitos
-    cursor.execute("SELECT categoria, SUM(valor) FROM debitos GROUP BY categoria")
+    query = "SELECT * FROM debitos WHERE 1=1"
+    params = []
+
+    if status_filtro:
+        query += " AND status = ?"
+        params.append(status_filtro)
+
+    if data_filtro == "agendada":
+        query += " AND data_agendada IS NOT NULL"
+    elif data_filtro == "paga":
+        query += " AND status = 'Pago'"
+
+    cursor.execute(query, params)
     debitos = cursor.fetchall()
-    total_debitos = sum([row[1] for row in debitos])
+
+    # Totalizadores para os gráficos
+    total_credito = cursor.execute("SELECT SUM(valor) FROM creditos").fetchall()[0] or 0
+    total_debito = cursor.execute("SELECT SUM(valor) FROM debitos").fetchall()[0] or 0
 
     conexao.close()
 
     return render_template("home.html",
-                           creditos=creditos,
-                           debitos=debitos,
-                           total_creditos=total_creditos,
-                           total_debitos=total_debitos)
+                           total_credito=total_credito,
+                           total_debito=total_debito,
+                           debitos=debitos
+                           )
 
 
 # Rota para a página de crédito e salvar dados
