@@ -29,19 +29,26 @@ def home():
         query += " AND status = 'Pago'"
 
     cursor.execute(query, params)
-    debitos = cursor.fetchall()
+    tabela_debitos = cursor.fetchall()
 
-    # Totalizadores para os gráficos
-    total_credito = cursor.execute("SELECT SUM(valor) FROM creditos").fetchall()[0] or 0
-    total_debito = cursor.execute("SELECT SUM(valor) FROM debitos").fetchall()[0] or 0
+    # Pega os dados de crédito
+    cursor.execute("SELECT categoria, SUM(valor) FROM creditos GROUP BY categoria")
+    creditos = cursor.fetchall()
+    total_creditos = sum([row[1] for row in creditos])
+
+    # Pega os dados de débitos
+    cursor.execute("SELECT categoria, SUM(valor) FROM debitos GROUP BY categoria")
+    debitos = cursor.fetchall()
+    total_debitos = sum([row[1] for row in debitos])
 
     conexao.close()
 
     return render_template("home.html",
-                           total_credito=total_credito,
-                           total_debito=total_debito,
-                           debitos=debitos
-                           )
+                           creditos=creditos,
+                           debitos=debitos,
+                           total_creditos=total_creditos,
+                           total_debitos=total_debitos,
+                           tabela_debitos=tabela_debitos)
 
 
 # Rota para a página de crédito e salvar dados
