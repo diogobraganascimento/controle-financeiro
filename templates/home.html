@@ -34,47 +34,50 @@
     <div class="container mt-5">
         <h3 class="text-center mb-4">Lista de Débitos</h3>
 
-        <!-- Formulário de Filtro -->
-        <form method="get" action="{{ url_for('home') }}" class="row g-2 align-items-center mb-4">
-            <!-- Campo de busca com ícone -->
-            <div class="col-auto">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" name="busca" id="busca" class="form-control"
-                           placeholder="Buscar descrição..." value="{{ request.args.get('busca', '') }}">
+        <div class="row align-items-center mb-4">
+            <!-- Coluna: Formulário de Filtro -->
+            <div class="col-md-9">
+                <form method="get" action="{{ url_for('home') }}" class="row g-2 align-items-center">
+                    <!-- Campo de busca com ícone -->
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" name="busca" id="busca" class="form-control"
+                                   placeholder="Buscar descrição..." value="{{ request.args.get('busca', '') }}">
+                        </div>
+                    </div>
+
+                    <!-- Filtro de Status -->
+                    <div class="col-auto">
+                        <select name="status" class="form-select">
+                            <option value="">Todos os Status</option>
+                            <option value="Pendente" {% if request.args.get('status') == 'Pendente' %}selected{% endif %}>Pendente</option>
+                            <option value="Pago" {% if request.args.get('status') == 'Pago' %}selected{% endif %}>Pago</option>
+                            <option value="Agendado" {% if request.args.get('status') == 'Agendado' %}selected{% endif %}>Agendado</option>
+                        </select>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                        {% if request.args.get('status') or request.args.get('busca') %}
+                            <a href="{{ url_for('home') }}" class="btn btn-danger ms-2">Limpar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Coluna: Botões de Exportação -->
+            <div class="col-md-3 text-end">
+                <h5>Download</h5>
+                <div class="btn-group">
+                    <a href="{{ url_for('exportar_dados', formato='xls') }}" class="btn btn-info text-write">
+                        <i class="bi bi-file-earmark-excel"></i> Excel</a>
+                    <a href="{{ url_for('exportar_dados', formato='json') }}" class="btn btn-info text-write">
+                        <i class="bi bi-code-slash"></i> JSON</a>
+                    <a href="{{ url_for('exportar_dados', formato='pdf') }}" class="btn btn-info text-write">
+                         <i class="bi bi-file-earmark-pdf"></i> PDF</a>
                 </div>
-            </div>
-
-            <!-- Filtro de Status -->
-            <div class="col-auto">
-                <select name="status" class="form-select">
-                    <option value="">Todos os Status</option>
-                    <option value="Pendente" {% if request.args.get('status') == 'Pendente' %}selected{% endif %}>Pendente</option>
-                    <option value="Pago" {% if request.args.get('status') == 'Pago' %}selected{% endif %}>Pago</option>
-                    <option value="Agendado" {% if request.args.get('status') == 'Agendado' %}selected{% endif %}>Agendado</option>
-                </select>
-            </div>
-
-            <!-- Botões -->
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Filtrar</button>
-                {% if request.args.get('status') or request.args.get('busca') %}
-                    <a href="{{ url_for('home') }}" class="btn btn-danger ms-2">Limpar</a>
-                {% endif %}
-            </div>
-        </form>
-
-        <!-- Exportar dados -->
-        <div class="col-md-2">
-            <div class="dropdown">
-                <button class="btn btn-success w-100 dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Exportar
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                    <li><a class="dropdown-item" href="{{ url_for('exportar_dados', formato='xls') }}">.XLS</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('exportar_dados', formato='json') }}">.JSON</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('exportar_dados', formato='pdf') }}">.PDF</a></li>
-                </ul>
             </div>
         </div>
 
