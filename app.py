@@ -1,7 +1,12 @@
 import os.path
-
-from flask import Flask, render_template, request, redirect, url_for
+import json
+from io import BytesIO
 import sqlite3
+
+import pandas as pd
+from fpdf import FPDF
+from flask import Flask, render_template, request, redirect, url_for, send_file
+
 
 app = Flask(__name__)
 
@@ -199,6 +204,57 @@ def atualizar_status_debito(id):
     conexao.commit()
     conexao.close()
     return redirect(url_for('debito'))
+
+
+@app.route('/exportar/<formato>')
+def exportar_dados(formato):
+    conexao = sqlite3.connect('financeiro.db')
+    df_creditos = pd.read_sql_query("SELECT * FROM creditos", conexao)
+    df_debitos = pd.read_sql_query("SELECT * FROM debitos", conexao)
+    conexao.close()
+
+    # Baixar em XLS
+    if formato == 'xls':
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df_creditos.to_excel(writer, sheet_name='Créditos', index=False)
+            df_debitos.to_excel(writer, sheet_name='Débitos', index=False)
+        output.seek(0)
+        return send_file(output, download_name='dados_financeiros.xlsx', as_attachment=True)
+
+    # Baixar em JSON
+    elif formato == 'json':
+        dados = {
+            "creditos": df_creditos.to_dict(orient="records"),
+            "debitos": df_debitos.to_dict(orient="records")
+        }
+        output = BytesIO()
+        output.write(json.dumps(dados, indent=4).encode('utf-8'))
+        output.seek(0)
+        return send_file(output, download_name='dados_financeiro.json', as_attachment=True)
+
+    # Baixar em PDF
+    elif formato == 'pdf':
+        pdf = FPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+
+        pdf.cell(200, 10, "Relatório de Créditos", ln=True, align="C")
+        for index, row in df_creditos.iterrows():
+            pdf.cell(0, 10, txt=str(row.to_dict()), ln=True)
+
+        pdf.add_page()
+        pdf.cell(200, 10, "Relatório de Débitos", ln=True, align="C")
+        for index, row in df_debitos.iterrows():
+            pdf.cell(0, 10, txt=str(row.to_dict()), ln=True)
+
+        output_bytes = pdf.output(dest='S').encode('latin-1')
+        output = BytesIO(output_bytes)
+
+        return send_file(output, download_name="dados_financeiro.pdf", as_attachment=True)
+
+    return "Formato não suportado", 400
 
 
 if __name__ == "__main__":

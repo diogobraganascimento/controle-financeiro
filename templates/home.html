@@ -64,6 +64,20 @@
             </div>
         </form>
 
+        <!-- Exportar dados -->
+        <div class="col-md-2">
+            <div class="dropdown">
+                <button class="btn btn-success w-100 dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Exportar
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('exportar_dados', formato='xls') }}">.XLS</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('exportar_dados', formato='json') }}">.JSON</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('exportar_dados', formato='pdf') }}">.PDF</a></li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Tabela de Débitos -->
         <table class="table table-striped table-bordered text-center align-middle">
             <thead class="table-secondary">
