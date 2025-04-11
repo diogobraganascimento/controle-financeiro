@@ -34,60 +34,72 @@
     <div class="container mt-5">
         <h3 class="text-center mb-4">Lista de Débitos</h3>
 
-        <div class="d-flex justify-content-end mb-3">
-            <form method="get" action="{{ url_for('home') }}" class="d-flex gap-2">
-                <!-- Filtro de Status -->
+        <!-- Formulário de Filtro -->
+        <form method="get" action="{{ url_for('home') }}" class="row g-2 align-items-center mb-4">
+            <!-- Campo de busca com ícone -->
+            <div class="col-auto">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="busca" id="busca" class="form-control"
+                           placeholder="Buscar descrição..." value="{{ request.args.get('busca', '') }}">
+                </div>
+            </div>
+
+            <!-- Filtro de Status -->
+            <div class="col-auto">
                 <select name="status" class="form-select">
                     <option value="">Todos os Status</option>
                     <option value="Pendente" {% if request.args.get('status') == 'Pendente' %}selected{% endif %}>Pendente</option>
                     <option value="Pago" {% if request.args.get('status') == 'Pago' %}selected{% endif %}>Pago</option>
                     <option value="Agendado" {% if request.args.get('status') == 'Agendado' %}selected{% endif %}>Agendado</option>
                 </select>
+            </div>
 
-                {% if request.args.get('status') or request.args.get('data') %}
-                    <a href="{{ url_for('home') }}" class="btn btn-danger">Limpar</a>
-                {% else %}
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
+            <!-- Botões -->
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                {% if request.args.get('status') or request.args.get('busca') %}
+                    <a href="{{ url_for('home') }}" class="btn btn-danger ms-2">Limpar</a>
                 {% endif %}
-            </form>
-        </div>
+            </div>
+        </form>
 
-
+        <!-- Tabela de Débitos -->
         <table class="table table-striped table-bordered text-center align-middle">
             <thead class="table-secondary">
                 <tr>
-                    <th>ID</th>             <!--[0]-->
-                    <th>Valor</th>          <!--[1]-->
-                    <th>Descrição</th>      <!--[2]-->
-                    <th>Tipo</th>           <!--[3]-->
-                    <th>Categoria</th>      <!--[4]-->
-                    <th>Data</th>           <!--[5]-->
-                    <th>Status</th>         <!--[6]-->
-                    <th>Data Agendada</th>  <!--[7]-->
+                    <th>ID</th>
+                    <th>Valor</th>
+                    <th>Descrição</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Data Agendada</th>
                 </tr>
             </thead>
             <tbody>
                 {% for debito in tabela_debitos %}
                 <tr>
-                    <td>{{ debito[0] }}</td>                                    <!-- ID -->
-                    <td>R$ {{ "%.2f"|format(debito[1]) }}</td>                  <!-- Valor -->
-                    <td>{{ debito[2] }}</td>                                    <!-- Descrição -->
-                    <td>{{ debito[3] }}</td>                                    <!-- Tipo -->
-                    <td>{{ debito[4] }}</td>                                    <!-- Categoria -->
-                    <td>{{ debito[5] }}</td>                                    <!-- Data -->
-                    <td>{{ debito[6] }}</td>                                    <!-- Status -->
-                    <td>{% if debito[6] == 'Agendado' %}
+                    <td>{{ debito[0] }}</td>
+                    <td>R$ {{ "%.2f"|format(debito[1]) }}</td>
+                    <td>{{ debito[2] }}</td>
+                    <td>{{ debito[3] }}</td>
+                    <td>{{ debito[4] }}</td>
+                    <td>{{ debito[5] }}</td>
+                    <td>{{ debito[6] }}</td>
+                    <td>
+                        {% if debito[6] == 'Agendado' %}
                             {{ debito[7] }}
                         {% else %}
                             -
                         {% endif %}
-                    </td> <!-- Data Agendada -->
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
 
     <style>
     canvas {

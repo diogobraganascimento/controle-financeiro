@@ -15,6 +15,7 @@ def home():
     # Filtros
     status_filtro = request.args.get("status")
     data_filtro = request.args.get("data")
+    busca = request.args.get("busca", "").lower()
 
     query = "SELECT * FROM debitos WHERE 1=1"
     params = []
@@ -30,6 +31,10 @@ def home():
 
     cursor.execute(query, params)
     tabela_debitos = cursor.fetchall()
+
+    # Aplica filtro de busca por descrição (índice 2 = descrição)
+    if busca:
+        tabela_debitos = [debito for debito in tabela_debitos if busca in debito[2].lower()]
 
     # Pega os dados de crédito
     cursor.execute("SELECT categoria, SUM(valor) FROM creditos GROUP BY categoria")
