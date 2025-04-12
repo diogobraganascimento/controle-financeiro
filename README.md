@@ -74,7 +74,7 @@ Na parte superior da tabela, você pode exportar os dados em três formatos:
 </p>
 
 ## 👨‍💻 Autor
-Diogo – Técnico e Desenvolvedor em transição de carreira.
+Diogo – Técnico e Desenvolvedor em transição de carreira. \
 Projetado com foco em produtividade, organização e controle financeiro pessoal/familiar.
 
 ## 📃 Licença
