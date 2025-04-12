@@ -68,17 +68,21 @@
             </div>
 
             <!-- Coluna: Botões de Exportação -->
-            <div class="col-md-3 text-end">
-                <h5>Download</h5>
+            <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+                <span class="text-muted small me-2">Baixar como:</span>
                 <div class="btn-group">
-                    <a href="{{ url_for('exportar_dados', formato='xls') }}" class="btn btn-info text-write">
-                        <i class="bi bi-file-earmark-excel"></i> Excel</a>
-                    <a href="{{ url_for('exportar_dados', formato='json') }}" class="btn btn-info text-write">
-                        <i class="bi bi-code-slash"></i> JSON</a>
-                    <a href="{{ url_for('exportar_dados', formato='pdf') }}" class="btn btn-info text-write">
-                         <i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                    <a href="{{ url_for('exportar_dados', formato='xls') }}" class="btn btn-outline-info">
+                        <i class="bi bi-file-earmark-excel"></i> Excel
+                    </a>
+                    <a href="{{ url_for('exportar_dados', formato='json') }}" class="btn btn-outline-info">
+                        <i class="bi bi-code-slash"></i> JSON
+                    </a>
+                    <a href="{{ url_for('exportar_dados', formato='pdf') }}" class="btn btn-outline-info">
+                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                    </a>
                 </div>
             </div>
+
         </div>
 
         <!-- Tabela de Débitos -->
