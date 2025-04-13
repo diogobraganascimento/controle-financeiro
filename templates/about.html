@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Sobre - Controle Financeiro{% endblock %}
+
+{% block content %}
+    <div class="container mt-5 mb-5">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Sobre o Projeto</h1>
+            <p class="text-muted">Entenda o propósito e funcionamento do sistema de controle financeiro</p>
+            <hr class="w-25 mx-auto">
+        </div>
+        <br>
+        <div class="mb-4">
+            <h4 class="text-primary">💡 Motivação</h4>
+            <p>
+                Este sistema foi criado com o objetivo de facilitar o controle financeiro familiar, permitindo o acompanhamento detalhado de
+                créditos e débitos, além de gerar relatórios úteis em formatos acessíveis como <strong>Excel, JSON e PDF</strong>.
+            </p>
+            <p>
+                O projeto surgiu da minha necessidade pessoal de ter uma ferramenta simples, funcional e adaptada à realidade do dia a dia,
+                ajudando na organização financeira.
+            </p>
+        </div>
+        <br><br><br><br>
+
+        <div class="mb-4">
+            <h4 class="text-success">🛠 Funcionalidades</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">✅ Registro de créditos e débitos</li>
+                        <li class="list-group-item">✅ Filtro por status e busca por descrição</li>
+                        <li class="list-group-item">✅ Classificação por tipo, categoria e data</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">✅ Exportação de dados (.xls, .json, .pdf)</li>
+                        <li class="list-group-item">✅ Interface responsiva com Bootstrap</li>
+                        <li class="list-group-item">✅ Armazenamento local com SQLite</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <br><br><br><br>
+        <div class="mb-4">
+            <h4 class="text-info">🧪 Tecnologias Utilizadas</h4>
+            <div class="row row-cols-2 row-cols-md-3 g-3">
+                <div class="col"><span class="badge bg-dark p-2">Python (Flask)</span></div>
+                <div class="col"><span class="badge bg-dark p-2">SQLite</span></div>
+                <div class="col"><span class="badge bg-dark p-2">Pandas</span></div>
+                <div class="col"><span class="badge bg-dark p-2">FPDF</span></div>
+                <div class="col"><span class="badge bg-dark p-2">XlsxWriter</span></div>
+                <div class="col"><span class="badge bg-dark p-2">Bootstrap 5</span></div>
+            </div>
+        </div>
+        <br><br><br><br>
+        <div class="mb-4">
+            <h4 class="text-secondary">👨‍💻 Autor</h4>
+            <p>
+                Este projeto foi desenvolvido por <strong>Diogo</strong>, unindo estudo e necessidade prática no cotidiano familiar.
+                É um exemplo de como a tecnologia pode ser aplicada diretamente na organização pessoal.
+            </p>
+        </div>
+    </div>
+
+{% endblock %}

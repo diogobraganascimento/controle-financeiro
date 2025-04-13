@@ -113,6 +113,12 @@ def debito():
     return render_template("debito.html", debitos=debitos)
 
 
+# Rota para a página About
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
 # Rota para editar dados da tabela de crédito
 @app.route("/editar_credito/<int:id>", methods=["GET", "POST"])
 def editar_credito(id):
@@ -206,6 +212,7 @@ def atualizar_status_debito(id):
     return redirect(url_for('debito'))
 
 
+# Rota para exportação dados em formatos PDF, JSON e XLS
 @app.route('/exportar/<formato>')
 def exportar_dados(formato):
     conexao = sqlite3.connect('financeiro.db')
