@@ -90,6 +90,12 @@ def logout():
     return redirect(url_for('login'))
 
 
+# Rota do Welcome
+@app.route('/welcome')
+def welcome():
+    return render_template("welcome.html")
+
+
 # Rota Home
 @app.route("/", methods=["GET"])
 def home():
