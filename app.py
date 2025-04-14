@@ -2,18 +2,100 @@ import os.path
 import json
 from io import BytesIO
 import sqlite3
+import bcrypt
 
 import pandas as pd
 from fpdf import FPDF
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
 
 
 app = Flask(__name__)
+app.secret_key = 'Q!w2e3r4t5'
+
+
+# Cria a tabela de usuários
+def criar_tabela_usuarios():
+    conexao = sqlite3.connect('financeiro.db')
+    c = conexao.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            senha_hash TEXT NOT NULL
+        )
+    ''')
+    conexao.commit()
+    conexao.close()
+
+
+criar_tabela_usuarios()
+
+
+# Rota de Login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        usuario = request.form['username']
+        senha = request.form['password']
+
+        concexao = sqlite3.connect('financeiro.db')
+        cursor = concexao.cursor()
+        cursor.execute("SELECT senha_hash FROM usuarios WHERE username = ?", (usuario,))
+        resultado = cursor.fetchone()
+        concexao.close()
+
+        if resultado and bcrypt.checkpw(senha.encode('utf-8'), resultado[0]):
+            session['usuario'] = usuario
+            return redirect(url_for('home'))
+        else:
+            flash("Usuário ou senha inválidos", "danger")
+
+    return render_template('login.html')
+
+
+# Roda de cadastro
+@app.route('/cadastro', methods=['GET', 'POST'])
+def cadastro():
+    if request.method == 'POST':
+        usuario = request.form['username']
+        senha = request.form['password']
+        confirmar_senha = request.form['confirm_password']
+
+        if senha != confirmar_senha:
+            flash("As senhas não coincidem", "danger")
+            return redirect(url_for('cadastro'))
+
+        senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
+
+        try:
+            conexao = sqlite3.connect('financeiro.db')
+            cursor = conexao.cursor()
+            cursor.execute("INSERT INTO usuarios (username, senha_hash) VALUES (?, ?)", (usuario, senha_hash))
+            conexao.commit()
+            conexao.close()
+            flash("Cadastro realizado com sucesso! Faça login.", "success")
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash("Usuário já existe", "warning")
+            return redirect(url_for('cadastro'))
+
+    return render_template('cadastro.html')
+
+
+# Rota de Logout
+@app.route('/logout')
+def logout():
+    session.pop('usuario', None)
+    flash("Você saiu com sucesso", "success")
+    return redirect(url_for('login'))
 
 
 # Rota Home
 @app.route("/", methods=["GET"])
 def home():
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
     conexao = sqlite3.connect('financeiro.db')
     cursor = conexao.cursor()
 

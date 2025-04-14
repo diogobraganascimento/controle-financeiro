@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro - Controle Financeiro{% endblock %}
+
+{% block content %}
+    <body class="container mt-5">
+        <h2 class="mb-4">Cadastro</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="mb-3">
+                <label>Usuário</label>
+                <input type="text" class="form-control" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label>Senha</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+            <div class="mb-3">
+                <label>Confirmar Senha</label>
+                <input type="password" class="form-control" name="confirm_password" required>
+            </div>
+            <button class="btn btn-success">Cadastrar</button>
+            <a href="{{ url_for('login') }}" class="btn-secondary ms-2">Já tenho conta</a>
+        </form>
+    </body>
+{% endblock %}
