@@ -40,15 +40,24 @@ def login():
 
         concexao = sqlite3.connect('financeiro.db')
         cursor = concexao.cursor()
-        cursor.execute("SELECT senha_hash FROM usuarios WHERE username = ?", (usuario,))
+        cursor.execute("SELECT senha_hash, is_admin FROM usuarios WHERE username = ?", (usuario,))
         resultado = cursor.fetchone()
         concexao.close()
 
-        if resultado and bcrypt.checkpw(senha.encode('utf-8'), resultado[0]):
-            session['usuario'] = usuario
-            return redirect(url_for('home'))
-        else:
-            flash("Usuário ou senha inválidos", "danger")
+        if resultado:
+            senha_hash = resultado[0]
+            is_admin = resultado[1]
+
+            if bcrypt.checkpw(senha.encode('utf-8'), senha_hash):
+                session['usuario'] = usuario
+                session['is_admin'] = bool(is_admin)
+
+                if session['is_admin']:
+                    return redirect(url_for('admin_dashboard'))
+                else:
+                    return redirect(url_for('home'))
+
+        flash("Usuário ou senha inválidos", "danger")
 
     return render_template('login.html')
 
@@ -87,17 +96,17 @@ def cadastro():
 def logout():
     session.pop('usuario', None)
     flash("Você saiu com sucesso", "success")
-    return redirect(url_for('login'))
+    return redirect(url_for('welcome'))
 
 
 # Rota do Welcome
-@app.route('/welcome')
+@app.route('/')
 def welcome():
     return render_template("welcome.html")
 
 
 # Rota Home
-@app.route("/", methods=["GET"])
+@app.route("/home", methods=["GET"])
 def home():
     if 'usuario' not in session:
         return redirect(url_for('login'))
@@ -147,6 +156,14 @@ def home():
                            total_creditos=total_creditos,
                            total_debitos=total_debitos,
                            tabela_debitos=tabela_debitos)
+
+
+# Rota Dashboard
+@app.route('/admin/dashboar')
+def admin_dashboard():
+    if not  session.get('is_admin'):
+        return redirect(url_for('login'))
+    return render_template('dashboard.html')
 
 
 # Rota para a página de crédito e salvar dados

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel do Administrador{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Painel Administrativo</h1>
+        <p class="text-muted">Bem-vindo, {{ session['usuario'] }}. Aqui você pode gerenciar funcionalidades do sistema.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Card: Gerenciar Funcionalidades -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-tools fs-1 text-primary"></i>
+                    <h5 class="card-title mt-3">Funcionalidades</h5>
+                    <p class="card-text">Crie e gerencie novas funções para o sistema.</p>
+                    <a href="#" class="btn btn-outline-primary">Gerenciar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Criar Campos -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-square fs-1 text-success"></i>
+                    <h5 class="card-title mt-3">Criar Campos</h5>
+                    <p class="card-text">Adicione novos campos personalizados nas páginas do sistema.</p>
+                    <a href="#" class="btn btn-outline-success">Criar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Configurações -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-gear fs-1 text-secondary"></i>
+                    <h5 class="card-title mt-3">Configurações</h5>
+                    <p class="card-text">Ajuste parâmetros do sistema de acordo com suas necessidades.</p>
+                    <a href="#" class="btn btn-outline-secondary">Ajustar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Gerenciar usuários -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-person fs-1 text-info"></i>
+                    <h5 class="card-title mt-3">Gerenciar Usuários</h5>
+                    <p class="card-text">Adicione, edite ou remova usuários do sistema.</p>
+                    <a href="#" class="btn btn-outline-info">Ajustar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
