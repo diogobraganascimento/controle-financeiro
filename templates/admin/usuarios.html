@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerenciar Usuários{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Usuários Cadastrados</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle text-center shadow-sm rounded">
+            <thead class="table-primary">
+                <tr>
+                    <th>Usuário</th>
+                    <th>Admin</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td class="fw-semibold">{{ usuario[1] }}</td>
+
+                    <td>
+                        {% if usuario[3] %}
+                            <span class="badge bg-primary"><i class="bi bi-star-fill me-1"></i>Admin</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Usuário</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if usuario[4] == 1 %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Ativo</span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Inativo</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <form action="{{ url_for('toggle_usuario', id=usuario[0]) }}" method="POST" data-bs-toggle="modal" data-bs-target="#confirmModal{{ usuario[0] }}">
+                            <button type="button" class="btn btn-sm {% if usuario[4] %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                {% if usuario[4] %}
+                                    <i class="bi bi-person-dash"></i> Desativar
+                                {% else %}
+                                    <i class="bi bi-person-check"></i> Ativar
+                                {% endif %}
+                            </button>
+                        </form>
+
+                        <!-- Modal de Confirmação -->
+                        <div class="modal fade" id="confirmModal{{ usuario[0] }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ usuario[0] }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmModalLabel{{ usuario[0] }}">Confirmação</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Tem certeza que deseja {% if usuario[4] %}<strong>desativar</strong>{% else %}<strong>ativar</strong>{% endif %} o usuário <strong>{{ usuario[1] }}</strong>?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="{{ url_for('toggle_usuario', id=usuario[0]) }}" method="POST">
+                                            <button type="submit" class="btn {% if usuario[4] %}btn-danger{% else %}btn-success{% endif %}">
+                                                Sim, {% if usuario[4] %}desativar{% else %}ativar{% endif %}
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Fim Modal -->
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

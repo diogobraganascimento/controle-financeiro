@@ -369,5 +369,39 @@ def exportar_dados(formato):
     return "Formato não suportado", 400
 
 
+# Rota para listar os usuários
+@app.route('/admin/usuários')
+def listar_usuarios():
+    if not session.get('is_admin'):
+        flash('Acesso restrito para administradores.', 'danger')
+        return redirect(url_for('login'))
+
+    conexao = sqlite3.connect('financeiro.db')
+    cursor = conexao.cursor()
+    cursor.execute("SELECT id, username, senha_hash, is_admin, ativo FROM usuarios")
+    usuarios = cursor.fetchall()
+    conexao.close()
+
+    return render_template('admin/usuarios.html', usuarios=usuarios)
+
+
+# Rota para Ativar/Desativar usuário
+@app.route('/admin/usuarios/<int:id>/toggle', methods=['POST'])
+def toggle_usuario(id):
+    conexao = sqlite3.connect('financeiro.db')
+    cursor = conexao.cursor()
+
+    cursor.execute("SELECT ativo FROM usuarios WHERE id = ?", (id,))
+    resultado = cursor.fetchone()
+
+    if resultado is not None:
+        novo_status = 0 if resultado[0] else 1
+        cursor.execute("UPDATE usuarios SET ativo = ? WHERE id = ?", (novo_status, id))
+        conexao.commit()
+
+    conexao.close()
+    return redirect(url_for('listar_usuarios'))
+
+
 if __name__ == "__main__":
     app.run(debug=True)
