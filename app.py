@@ -7,7 +7,7 @@ import bcrypt
 import pandas as pd
 from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
-from utils import execultar_consulta
+from utils import executar_consulta
 
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ def login():
         senha = request.form['password']
 
         query = "SELECT id, username, senha_hash, is_admin FROM usuarios WHERE username = ?"
-        resultado = execultar_consulta(query, (usuario,), fetchone=True)
+        resultado = executar_consulta(query, (usuario,), fetchone=True)
 
         if resultado:
             id_usuario, username, senha_hash, is_admin = resultado
@@ -72,7 +72,7 @@ def perfil():
     usuario_nome = session['usuario']['username']
 
     query = "SELECT id, username, is_admin, ativo FROM usuarios WHERE username = ?"
-    usuario = execultar_consulta(query, (usuario_nome,), fetchone=True)
+    usuario = executar_consulta(query, (usuario_nome,), fetchone=True)
 
     return render_template('perfil.html', usuario=usuario)
 
@@ -85,7 +85,7 @@ def desativar_conta(id):
         return redirect(url_for('login'))
 
     query = "UPDATE usuarios SET ativo = 0 WHERE id = ?"
-    execultar_consulta(query, (id,), commit=True)
+    executar_consulta(query, (id,), commit=True)
 
     session.clear()
     flash('Conta desativada com sucesso.', 'success')
@@ -108,7 +108,7 @@ def cadastro():
 
         try:
             query = "INSERT INTO usuarios (username, senha_hash) VALUES (?, ?)"
-            execultar_consulta(query, (usuario, senha_hash), commit=True)
+            executar_consulta(query, (usuario, senha_hash), commit=True)
             flash("Cadastro realizado com sucesso! Faça login.", "success")
             return redirect(url_for('login'))
         except sqlite3.IntegrityError:
@@ -158,21 +158,18 @@ def home():
     elif data_filtro == "paga":
         query += " AND status = 'Pago'"
 
-    cursor.execute(query, params)
-    tabela_debitos = cursor.fetchall()
+    tabela_debitos = executar_consulta(query, params, fetchall=True)
 
     # Aplica filtro de busca por descrição (índice 2 = descrição)
     if busca:
         tabela_debitos = [debito for debito in tabela_debitos if busca in debito[2].lower()]
 
     # Pega os dados de crédito
-    cursor.execute("SELECT categoria, SUM(valor) FROM creditos GROUP BY categoria")
-    creditos = cursor.fetchall()
+    creditos = executar_consulta("SELECT categoria, SUM(valor) FROM creditos GROUP BY categoria", fetchall=True)
     total_creditos = sum([row[1] for row in creditos])
 
     # Pega os dados de débitos
-    cursor.execute("SELECT categoria, SUM(valor) FROM debitos GROUP BY categoria")
-    debitos = cursor.fetchall()
+    debitos = executar_consulta("SELECT categoria, SUM(valor) FROM debitos GROUP BY categoria", fetchall=True)
     total_debitos = sum([row[1] for row in debitos])
 
     conexao.close()

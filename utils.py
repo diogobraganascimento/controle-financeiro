@@ -1,7 +1,7 @@
 import sqlite3
 
 
-def execultar_consulta(query, parametros=(), fetchone=False, fetchall=False, commit=False):
+def executar_consulta(query, parametros=(), fetchone=False, fetchall=False, commit=False):
     conexao = sqlite3.connect('financeiro.db')
     cursor = conexao.cursor()
     cursor.execute(query, parametros)
