@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Perfil do Usuário</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Nome de Usuário:</strong> {{ usuario[1] }}</p>
+            <p><strong>Permissão:</strong> {% if usuario[2] %}Administrador{% else %}Usuário comum{% endif %}</p>
+            <p><strong>Status:</strong>
+                {% if usuario[3] %}
+                    <span class="badge bg-success">Ativo</span>
+                {% else %}
+                    <span class="badge bg-danger">Inativo</span>
+                {% endif %}
+            </p>
+
+            <!-- Botão para desativar conta -->
+            {% if usuario[3] %}
+                <button class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#modalDesativar">
+                    Desativar conta
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação -->
+<div class="modal fade" id="modalDesativar" tabindex="-1" aria-labelledby="modalDesativarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ url_for('desativar_conta', id=usuario[0]) }}" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDesativarLabel">Confirmar Desativação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja desativar sua conta? Você será desconectado automaticamente.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Desativar Conta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

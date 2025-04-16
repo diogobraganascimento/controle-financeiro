@@ -64,6 +64,42 @@ def login():
     return render_template('login.html')
 
 
+# Rota do Perfil
+@app.route('/perfil')
+def perfil():
+    if 'usuario' not in session:
+        flash('Você precisa estar logado para acessar o perfil.', 'warning')
+        return redirect(url_for('login'))
+
+    usuario_nome = session['usuario']['username']
+
+    conexao = sqlite3.connect('financeiro.db')
+    cursor = conexao.cursor()
+    cursor.execute("SELECT id, username, is_admin, ativo FROM usuarios WHERE username = ?", (usuario_nome,))
+    usuario = cursor.fetchone()
+    conexao.close()
+
+    return render_template('perfil.html', usuario=usuario)
+
+
+# Rota de Desativação da Conta
+@app.route('/desativar_conta/<int:id>', methods=['POST'])
+def desativar_conta(id):
+    if 'usuario' not in session:
+        flash('Você precisa estar logado para fazer isso.', 'danger')
+        return redirect(url_for('login'))
+
+    conexao = sqlite3.connect('financeiro.db')
+    cursor = conexao.cursor()
+    cursor.execute("UPDATE usuarios SET ativo = 0 WHERE id = ?", (id,))
+    conexao.commit()
+    conexao.close()
+
+    session.clear()
+    flash('Conta desativada com sucesso.', 'success')
+    return redirect(url_for('welcome'))
+
+
 # Roda de cadastro
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
