@@ -84,11 +84,8 @@ def desativar_conta(id):
         flash('Você precisa estar logado para fazer isso.', 'danger')
         return redirect(url_for('login'))
 
-    conexao = sqlite3.connect('financeiro.db')
-    cursor = conexao.cursor()
-    cursor.execute("UPDATE usuarios SET ativo = 0 WHERE id = ?", (id,))
-    conexao.commit()
-    conexao.close()
+    query = "UPDATE usuarios SET ativo = 0 WHERE id = ?"
+    execultar_consulta(query, (id,), commit=True)
 
     session.clear()
     flash('Conta desativada com sucesso.', 'success')
