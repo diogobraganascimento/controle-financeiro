@@ -7,6 +7,7 @@ import bcrypt
 import pandas as pd
 from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
+from utils import execultar_consulta
 
 
 app = Flask(__name__)
@@ -38,11 +39,8 @@ def login():
         usuario = request.form['username']
         senha = request.form['password']
 
-        concexao = sqlite3.connect('financeiro.db')
-        cursor = concexao.cursor()
-        cursor.execute("SELECT id, username, senha_hash, is_admin FROM usuarios WHERE username = ?", (usuario,))
-        resultado = cursor.fetchone()
-        concexao.close()
+        query = "SELECT id, username, senha_hash, is_admin FROM usuarios WHERE username = ?"
+        resultado = execultar_consulta(query, (usuario,), fetchone=True)
 
         if resultado:
             id_usuario, username, senha_hash, is_admin = resultado
@@ -50,11 +48,11 @@ def login():
             if bcrypt.checkpw(senha.encode('utf-8'), senha_hash):
                 session['usuario'] = {
                     'id': id_usuario,
-                    'username': username,
-                    'is_admin': bool(is_admin)
+                    'username': username
                 }
+                session['is_admin'] = bool(is_admin)
 
-                if session['usuario']['is_admin']:
+                if session['is_admin']:
                     return redirect(url_for('admin_dashboard'))
                 else:
                     return redirect(url_for('home'))
