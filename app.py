@@ -71,11 +71,8 @@ def perfil():
 
     usuario_nome = session['usuario']['username']
 
-    conexao = sqlite3.connect('financeiro.db')
-    cursor = conexao.cursor()
-    cursor.execute("SELECT id, username, is_admin, ativo FROM usuarios WHERE username = ?", (usuario_nome,))
-    usuario = cursor.fetchone()
-    conexao.close()
+    query = "SELECT id, username, is_admin, ativo FROM usuarios WHERE username = ?"
+    usuario = execultar_consulta(query, (usuario_nome,), fetchone=True)
 
     return render_template('perfil.html', usuario=usuario)
 
