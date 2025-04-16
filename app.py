@@ -107,11 +107,8 @@ def cadastro():
         senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
 
         try:
-            conexao = sqlite3.connect('financeiro.db')
-            cursor = conexao.cursor()
-            cursor.execute("INSERT INTO usuarios (username, senha_hash) VALUES (?, ?)", (usuario, senha_hash))
-            conexao.commit()
-            conexao.close()
+            query = "INSERT INTO usuarios (username, senha_hash) VALUES (?, ?)"
+            execultar_consulta(query, (usuario, senha_hash), commit=True)
             flash("Cadastro realizado com sucesso! Faça login.", "success")
             return redirect(url_for('login'))
         except sqlite3.IntegrityError:
