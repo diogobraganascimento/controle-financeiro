@@ -38,39 +38,69 @@
                     </td>
 
                     <td>
-                        <form action="{{ url_for('toggle_usuario', id=usuario[0]) }}" method="POST" data-bs-toggle="modal" data-bs-target="#confirmModal{{ usuario[0] }}">
-                            <button type="button" class="btn btn-sm {% if usuario[4] %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
-                                {% if usuario[4] %}
-                                    <i class="bi bi-person-dash"></i> Desativar
-                                {% else %}
-                                    <i class="bi bi-person-check"></i> Ativar
-                                {% endif %}
-                            </button>
-                        </form>
+                        <!-- Botão de Ativar/Desativar com modal -->
+                        <button class="btn btn-sm {% if usuario[4] %}btn-danger{% else %}btn-success{% endif %}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmarAcao{{ usuario[0] }}">
+                            {% if usuario[4] %}Desativar{% else %}Ativar{% endif %}
+                        </button>
 
-                        <!-- Modal de Confirmação -->
-                        <div class="modal fade" id="confirmModal{{ usuario[0] }}" tabindex="-1" aria-labelledby="confirmModalLabel{{ usuario[0] }}" aria-hidden="true">
+                        <!-- Modal de confirmação de Ativar/Desativar -->
+                        <div class="modal fade"
+                                id="comfirmarAcao{{ usuario[0] }}"
+                                tabindex="-1"
+                                aria-labelledby="confirmarAcao{{ usuario[0] }}"
+                                aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="confirmModalLabel{{ usuario[0] }}">Confirmação</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Tem certeza que deseja {% if usuario[4] %}<strong>desativar</strong>{% else %}<strong>ativar</strong>{% endif %} o usuário <strong>{{ usuario[1] }}</strong>?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <form action="{{ url_for('toggle_usuario', id=usuario[0]) }}" method="POST">
+                                    <form action="{{ url_for('toggle_usuario', id=usuario[0]) }}" method="POST">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmarAcaoLabel{{ usuario[0] }}">Confirmar Ação</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Tem certeza que deseja {% if usuario[4] %}desativar{% else %}Ativar{% endif %} o usuário <strong>{{ usuario[1] }}</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                             <button type="submit" class="btn {% if usuario[4] %}btn-danger{% else %}btn-success{% endif %}">
-                                                Sim, {% if usuario[4] %}desativar{% else %}ativar{% endif %}
+                                                {% if usuario[4] %}Desativar{% else %}Ativar{% endif %}
                                             </button>
-                                        </form>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        <!-- Fim Modal -->
+
+                        <!-- Botão de Tornar/Remover Admin com modal -->
+                        <button class="btn btn-sm {% if usuario[3] %}btn-secondary{% else %}btn-primary{% endif %}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmarAdmin{{ usuario[0] }}">
+                            {% if usuario[3] %}Remover Admin{% else %}Tornar Admin{% endif %}
+                        </button>
+
+                        <!-- Modal de confirmação de admin -->
+                        <div class="modal fade" id="confirmarAdmin{{ usuario[0] }}" tabindex="-1" aria-labelledby="confirmarAdminLabel{{ usuario[0] }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form action="{{ url_for('toggle_admin', id=usuario[0]) }}" method="POST">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmarAdminLabel{{ usuario[0] }}">Confirmar Ação</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Tem certeza que deseja {% if usuario[3] %}remover permissões de admin{% else %}tornar admin{% endif %} o usuário <strong>{{ usuario[1] }}</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn {% if usuario[3] %}btn-secondary{% else %}btn-primary{% endif %}">
+                                                {% if usuario[3] %}Remover Admin{% else %}Tornar Admin{% endif %}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

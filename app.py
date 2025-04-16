@@ -40,19 +40,21 @@ def login():
 
         concexao = sqlite3.connect('financeiro.db')
         cursor = concexao.cursor()
-        cursor.execute("SELECT senha_hash, is_admin FROM usuarios WHERE username = ?", (usuario,))
+        cursor.execute("SELECT id, username, senha_hash, is_admin FROM usuarios WHERE username = ?", (usuario,))
         resultado = cursor.fetchone()
         concexao.close()
 
         if resultado:
-            senha_hash = resultado[0]
-            is_admin = resultado[1]
+            id_usuario, username, senha_hash, is_admin = resultado
 
             if bcrypt.checkpw(senha.encode('utf-8'), senha_hash):
-                session['usuario'] = usuario
-                session['is_admin'] = bool(is_admin)
+                session['usuario'] = {
+                    'id': id_usuario,
+                    'username': username,
+                    'is_admin': bool(is_admin)
+                }
 
-                if session['is_admin']:
+                if session['usuario']['is_admin']:
                     return redirect(url_for('admin_dashboard'))
                 else:
                     return redirect(url_for('home'))
@@ -159,11 +161,11 @@ def home():
 
 
 # Rota Dashboard
-@app.route('/admin/dashboar')
+@app.route('/admin/dashboard')
 def admin_dashboard():
-    if not  session.get('is_admin'):
+    if not session.get('is_admin'):
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+    return render_template('admin/dashboard.html')
 
 
 # Rota para a página de crédito e salvar dados
@@ -397,6 +399,28 @@ def toggle_usuario(id):
     if resultado is not None:
         novo_status = 0 if resultado[0] else 1
         cursor.execute("UPDATE usuarios SET ativo = ? WHERE id = ?", (novo_status, id))
+        conexao.commit()
+
+    conexao.close()
+    return redirect(url_for('listar_usuarios'))
+
+# Rota para Tornar/Remover Admin
+@app.route('/admin/toggle_admin/<int:id>', methods=['POST'])
+def toggle_admin(id):
+    if not session.get('is_admin'):
+        flash('Acesso restrito para administradores.', 'danger')
+        return redirect(url_for('login'))
+
+    conexao = sqlite3.connect('financeiro.db')
+    cursor = conexao.cursor()
+
+    # Verifica o status atual de admin
+    cursor.execute("SELECT is_admin FROM usuarios WHERE id = ?", (id,))
+    resultado = cursor.fetchone()
+
+    if resultado:
+        novo_status = 0 if resultado[0] else 1
+        cursor.execute("UPDATE usuarios SET is_admin = ? WHERE id = ?", (novo_status, id))
         conexao.commit()
 
     conexao.close()
