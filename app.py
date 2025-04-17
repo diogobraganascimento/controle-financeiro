@@ -193,9 +193,6 @@ def admin_dashboard():
 # Rota para a página de crédito e salvar dados
 @app.route("/credito", methods=["GET", "POST"])
 def credito():
-    conaxao = sqlite3.connect("financeiro.db")
-    cursor = conaxao.cursor()
-
     if request.method == "POST":
         valor = request.form.get("valor")
         descricao = request.form.get("descricao")
@@ -204,15 +201,13 @@ def credito():
         data = request.form.get("data")
 
         if valor and descricao and tipo and categoria and data:
-            cursor.execute("INSERT INTO creditos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)",
-                           (valor, descricao, tipo, categoria, data))
-            conaxao.commit()
+            query = "INSERT INTO credito (valor, descricao, tipo, categoria, data) VALUE (?, ?, ?, ?, ?)"
+            parametros = (valor, descricao, tipo, categoria, data)
+            executar_consulta(query, parametros, commit=True)
 
     # Buscar todos os registros da tabela de crédito
-    cursor.execute("SELECT * FROM creditos")
-    creditos = cursor.fetchall()
+    creditos = executar_consulta("SELECT * FROM creditos", fetchall=True)
 
-    conaxao.close()
     return render_template("credito.html", creditos=creditos)
 
 
