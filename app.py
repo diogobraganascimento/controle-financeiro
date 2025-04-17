@@ -387,19 +387,22 @@ def listar_usuarios():
 # Rota para Ativar/Desativar usuário
 @app.route('/admin/usuarios/<int:id>/toggle', methods=['POST'])
 def toggle_usuario(id):
-    conexao = sqlite3.connect('financeiro.db')
-    cursor = conexao.cursor()
-
-    cursor.execute("SELECT ativo FROM usuarios WHERE id = ?", (id,))
-    resultado = cursor.fetchone()
+    resultado = executar_consulta(
+        "SELECT ativo FROM usuarios WHERE id = ?",
+        (id,),
+        fetchone=True
+    )
 
     if resultado is not None:
         novo_status = 0 if resultado[0] else 1
-        cursor.execute("UPDATE usuarios SET ativo = ? WHERE id = ?", (novo_status, id))
-        conexao.commit()
+        executar_consulta(
+            "UPDATE usuarios SET ativo = ? WHERE id = ?",
+            (novo_status, id),
+            commit=True
+        )
 
-    conexao.close()
     return redirect(url_for('listar_usuarios'))
+
 
 # Rota para Tornar/Remover Admin
 @app.route('/admin/toggle_admin/<int:id>', methods=['POST'])
