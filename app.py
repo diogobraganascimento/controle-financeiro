@@ -267,9 +267,6 @@ def editar_credito(id):
 # Rota para editar dados da tabela de débito
 @app.route("/editar_debito/<int:id>", methods=["GET", "POST"])
 def editar_debito(id):
-    conexao = sqlite3.connect("financeiro.db")
-    cursor = conexao.cursor()
-
     if request.method == "POST":
         valor = request.form.get("valor")
         descricao = request.form.get("descricao")
@@ -277,15 +274,17 @@ def editar_debito(id):
         categoria = request.form.get("categoria")
         data = request.form.get("data")
 
-        cursor.execute("UPDATE debitos SET valor=?, descricao=?, tipo=?, categoria=?, data=? WHERE id=?",
-                       (valor, descricao, tipo, categoria, data, id))
-        conexao.commit()
-        conexao.close()
+        query = """
+            UPDATE debitos
+            SET valor = ?, descricao = ?, tipo = ?, categoria = ?, data = ?
+            WHERE id = ?
+        """
+        parametros = (valor, descricao, tipo, categoria, data, id)
+        executar_consulta(query, parametros, commit=True)
         return redirect(url_for("debito"))
 
-    cursor.execute("SELECT * FROM debitos WHERE id=?", (id,))
-    debito = cursor.fetchone()
-    conexao.close()
+    query = "SELECT * FROM debitos WHERE id  = ?"
+    debito =executar_consulta(query, (id,), fetchone=True)
 
     return render_template("editar_debito.html", debito=debito)
 
