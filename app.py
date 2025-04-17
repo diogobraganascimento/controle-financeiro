@@ -376,11 +376,10 @@ def listar_usuarios():
         flash('Acesso restrito para administradores.', 'danger')
         return redirect(url_for('login'))
 
-    conexao = sqlite3.connect('financeiro.db')
-    cursor = conexao.cursor()
-    cursor.execute("SELECT id, username, senha_hash, is_admin, ativo FROM usuarios")
-    usuarios = cursor.fetchall()
-    conexao.close()
+    with sqlite3.connect('financeiro.db') as conexao:
+        cursor = conexao.cursor()
+        cursor.execute("SELECT id, username, senha_hash, is_admin, ativo FROM usuarios")
+        usuarios = cursor.fetchall()
 
     return render_template('admin/usuarios.html', usuarios=usuarios)
 
