@@ -214,9 +214,6 @@ def credito():
 # Rota para página de débito e salvar dados
 @app.route("/debito", methods=["GET", "POST"])
 def debito():
-    conaxao = sqlite3.connect("financeiro.db")
-    cursor = conaxao.cursor()
-
     if request.method == "POST":
         valor = request.form.get("valor")
         descricao = request.form.get("descricao")
@@ -225,15 +222,13 @@ def debito():
         data = request.form.get("data")
 
         if valor and descricao and tipo and categoria and data:
-            cursor.execute("INSERT INTO debitos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)",
-                           (valor, descricao, tipo, categoria, data))
-            conaxao.commit()
+            query = "INSET INTO debitos (valor, descricao, tipo, categoria, data) VALUE (?, ?, ?, ?, ?)"
+            parametros = (valor, descricao, tipo, categoria, data)
+            executar_consulta(query, parametros, commit=True)
 
     # Buscar todos os registros da tabela de crédito
-    cursor.execute("SELECT * FROM debitos")
-    debitos = cursor.fetchall()
+    debitos = executar_consulta("SELECT * FROM debitos", fetchall=True)
 
-    conaxao.close()
     return render_template("debito.html", debitos=debitos)
 
 
