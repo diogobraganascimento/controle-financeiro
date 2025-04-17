@@ -325,12 +325,10 @@ def atualizar_status_debito(id):
 # Rota para exportação dados em formatos PDF, JSON e XLS
 @app.route('/exportar/<formato>')
 def exportar_dados(formato):
-    conexao = sqlite3.connect('financeiro.db')
-    df_creditos = pd.read_sql_query("SELECT * FROM creditos", conexao)
-    df_debitos = pd.read_sql_query("SELECT * FROM debitos", conexao)
-    conexao.close()
+    with sqlite3.connect('financeiro.db') as conexao:
+        df_creditos = pd.read_sql_query("SELECT * FROM creditos", conexao)
+        df_debitos = pd.read_sql_query("SELECT * FROM debitos", conexao)
 
-    # Baixar em XLS
     if formato == 'xls':
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
@@ -339,7 +337,6 @@ def exportar_dados(formato):
         output.seek(0)
         return send_file(output, download_name='dados_financeiros.xlsx', as_attachment=True)
 
-    # Baixar em JSON
     elif formato == 'json':
         dados = {
             "creditos": df_creditos.to_dict(orient="records"),
@@ -350,7 +347,6 @@ def exportar_dados(formato):
         output.seek(0)
         return send_file(output, download_name='dados_financeiro.json', as_attachment=True)
 
-    # Baixar em PDF
     elif formato == 'pdf':
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
@@ -358,17 +354,16 @@ def exportar_dados(formato):
         pdf.set_font("Arial", size=12)
 
         pdf.cell(200, 10, "Relatório de Créditos", ln=True, align="C")
-        for index, row in df_creditos.iterrows():
+        for _, row in df_creditos.iterrows():
             pdf.cell(0, 10, txt=str(row.to_dict()), ln=True)
 
         pdf.add_page()
         pdf.cell(200, 10, "Relatório de Débitos", ln=True, align="C")
-        for index, row in df_debitos.iterrows():
+        for _, row in df_debitos.iterrows():
             pdf.cell(0, 10, txt=str(row.to_dict()), ln=True)
 
         output_bytes = pdf.output(dest='S').encode('latin-1')
         output = BytesIO(output_bytes)
-
         return send_file(output, download_name="dados_financeiro.pdf", as_attachment=True)
 
     return "Formato não suportado", 400
