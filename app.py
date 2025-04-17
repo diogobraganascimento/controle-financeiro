@@ -408,22 +408,23 @@ def toggle_usuario(id):
 @app.route('/admin/toggle_admin/<int:id>', methods=['POST'])
 def toggle_admin(id):
     if not session.get('is_admin'):
-        flash('Acesso restrito para administradores.', 'danger')
+        flash('Acesso restrito para administrator.', 'danger')
         return redirect(url_for('login'))
 
-    conexao = sqlite3.connect('financeiro.db')
-    cursor = conexao.cursor()
-
-    # Verifica o status atual de admin
-    cursor.execute("SELECT is_admin FROM usuarios WHERE id = ?", (id,))
-    resultado = cursor.fetchone()
+    resultado = executar_consulta(
+        "SELECT is_admin FROM usuarios WHERE id = ?",
+        (id,),
+        fetchone=True
+    )
 
     if resultado:
         novo_status = 0 if resultado[0] else 1
-        cursor.execute("UPDATE usuarios SET is_admin = ? WHERE id = ?", (novo_status, id))
-        conexao.commit()
+        executar_consulta(
+            "UPDATE usuarios SET is_admin = ? WHERE id = ?",
+            (novo_status, id),
+            commit=True
+        )
 
-    conexao.close()
     return redirect(url_for('listar_usuarios'))
 
 
