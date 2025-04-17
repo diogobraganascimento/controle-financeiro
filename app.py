@@ -300,11 +300,8 @@ def excluir_credito(id):
 # Rota para excluir dados da tabela débito
 @app.route("/excluir_debito/<int:id>")
 def excluir_debito(id):
-    conexao = sqlite3.connect("financeiro.db")
-    cursor = conexao.cursor()
-    cursor.execute("DELETE FROM debitos WHERE id=?", (id,))
-    conexao.commit()
-    conexao.close()
+    query = "DELETE FROM debitos WHERE id = ?"
+    executar_consulta(query, (id,), commit=True)
     return redirect(url_for("debito"))
 
 
