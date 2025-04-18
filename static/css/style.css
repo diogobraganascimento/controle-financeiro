@@ -18,3 +18,9 @@ canvas {
 #contentLogin, #contentCadastro {
     min-height: 80vh;
 }
+
+/* Página Home */
+.canvas {
+    max-width: 300px;
+    max-height: 300px;
+}

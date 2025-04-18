@@ -122,123 +122,15 @@
         </table>
     </div>
 
-    <style>
-    canvas {
-        max-width: 300px;
-        max-height: 300px;
-    }
-    </style>
-
 {% endblock %}
+
 {% block scripts %}
 <script>
-    const dadosCredito = {
-        labels: {{ creditos|map(attribute=0)|list|tojson }},
-        datasets: [{
-            data: {{ creditos|map(attribute=1)|list|tojson }},
-            backgroundColor: ['#4caf50', '#81c784', '#a5d6a7', '#c8e6c9']
-        }]
-    };
-
-    const dadosDebito = {
-        labels: {{ debitos|map(attribute=0)|list|tojson }},
-        datasets: [{
-            data: {{ debitos|map(attribute=1)|list|tojson }},
-            backgroundColor: ['#f44336', '#e57373', '#ef9a9a', '#ffcdd2']
-        }]
-    };
-
-    new Chart(document.getElementById('graficoCredito'), {
-        type: 'doughnut',
-        data: dadosCredito,
-        options: {
-            plugins: {
-                textoCentral: { total: {{ total_creditos }} }
-            }
-        },
-        plugins: [textoCentral]
-    });
-
-    new Chart(document.getElementById('graficoDebito'), {
-        type: 'doughnut',
-        data: dadosDebito,
-        options: {
-            plugins: {
-                textoCentral: { total: {{ total_debitos }} }
-            }
-        },
-        plugins: [textoCentral]
-    });
-
-
-    // Gráfico de comparação entre Crédito e Débito (barra horizontal)
-    document.addEventListener('DOMContentLoaded', function () {
-        const totalCreditos = {{ total_creditos }};
-        const totalDebitos = {{ total_debitos }};
-        const total = totalCreditos + totalDebitos;
-
-        const porcentagemCredito = (totalCreditos / total) * 100;
-        const porcentagemDebito = (totalDebitos / total) * 100;
-
-        const ctxComparacao = document.getElementById('graficoComparativo');
-        if (ctxComparacao) {
-            new Chart(ctxComparacao, {
-                type: 'bar',
-                data: {
-                    labels: [''],
-                    datasets: [
-                        {
-                            label: 'Créditos',
-                            data: [porcentagemCredito],
-                            backgroundColor: '#4caf50',
-                            stack: 'stack1'
-                        },
-                        {
-                            label: 'Débitos',
-                            data: [porcentagemDebito],
-                            backgroundColor: '#f44336',
-                            stack: 'stack1'
-                        }
-                    ]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    elements: {
-                        bar: {
-                            barThickness: 100 // Mais fino
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const valor = context.dataset.label === 'Créditos' ? totalCreditos : totalDebitos;
-                                    return `${context.dataset.label}: R$ ${valor.toFixed(2)}`;
-                                }
-                            }
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-                    },
-                    scales: {
-                        x: {
-                            stacked: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                },
-                                max: 100
-                            }
-                        },
-                        y: {
-                            stacked: true
-                        }
-                    }
-                }
-            });
-        }
-    });
+    const creditosLabels = {{ creditos | map(attribute=0) | list | tojson }};
+    const creditosValores = {{ creditos | map(attribute=1) | list | tojson }};
+    const debitosLabels = {{ debitos | map(attribute=0) | list | tojson }};
+    const debitosValores = {{ debitos | map(attribute=1) | list | tojson }};
+    const totalCreditos = {{ total_creditos }};
+    const totalDebitos = {{ total_debitos }};
 </script>
 {% endblock %}
