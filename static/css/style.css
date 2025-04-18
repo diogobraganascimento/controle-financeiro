@@ -2,3 +2,19 @@ canvas {
     max-width: 250px;
     max-height: 250px;
 }
+
+
+/* Páginas Crédito, Débito, Editar_Credito, Editar_Debito */
+#creditoForm, #debitoForm, #editarCreditoForm, #editarDebitoForm {
+    max-width: 600px;
+}
+
+/* Página Login */
+#cardLogin, #cardCadastro {
+    width: 100%;
+    max-width: 400px;
+}
+
+#contentLogin, #contentCadastro {
+    min-height: 80vh;
+}

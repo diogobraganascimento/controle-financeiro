@@ -3,8 +3,9 @@
 {% block title %}Cadastro - Controle Financeiro{% endblock %}
 
 {% block content %}
-    <body class="container mt-5">
-        <h2 class="mb-4">Cadastro</h2>
+<div class="d-flex justify-content-center align-items-center" id="contentCadastro">
+    <div class="card shadow p-4" id="cardCadastro">
+        <h2 class="text-center mb-4">Cadastro</h2>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -30,5 +31,6 @@
             <button class="btn btn-success">Cadastrar</button>
             <a href="{{ url_for('login') }}" class="btn-secondary ms-2">Já tenho conta</a>
         </form>
-    </body>
+    </div>
+</div>
 {% endblock %}

@@ -11,22 +11,24 @@ from utils import executar_consulta
 
 
 app = Flask(__name__)
-app.secret_key = 'Q!w2e3r4t5'
+app.secret_key = 'Q1w2e3r4t5'
 
 
 # Cria a tabela de usuários
 def criar_tabela_usuarios():
-    conexao = sqlite3.connect('financeiro.db')
-    c = conexao.cursor()
-    c.execute('''
+    """
+    Cria a tabela 'usuarios' no banco de dados, caso ela ainda não exista.
+    """
+    query = '''
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
-            senha_hash TEXT NOT NULL
+            senha_hash TEXT NOT NULL,
+            is_admin INTEGER DEFAULT 0,
+            ativo INTEGER DEFAULT 1
         )
-    ''')
-    conexao.commit()
-    conexao.close()
+    '''
+    executar_consulta(query, commit=True)
 
 
 criar_tabela_usuarios()

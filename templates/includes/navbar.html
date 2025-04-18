@@ -8,7 +8,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
     {% if session.get('usuario') %}
         <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-            {% if session['usuario']['is_admin'] %}
+            {% if session['is_admin'] %}
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
                 </li>
