@@ -13,12 +13,14 @@
             <div class="col-md-4 d-flex flex-column align-items-center mb-4">
                 <h4>Créditos</h4>
                 <canvas id="graficoCredito" width="200" height="200"></canvas>
+                <a href="/credito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
             </div>
 
             <!-- Gráfico de Débitos -->
             <div class="col-md-4 d-flex flex-column align-items-center mb-4">
                 <h4>Débitos</h4>
                 <canvas id="graficoDebito" width="200" height="200"></canvas>
+                <a href="/debito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
             </div>
         </div>
 
@@ -34,55 +36,62 @@
     <div class="container mt-5">
         <h3 class="text-center mb-4">Lista de Débitos</h3>
 
-        <div class="row align-items-center mb-4">
-            <!-- Coluna: Formulário de Filtro -->
-            <div class="col-md-9">
-                <form method="get" action="{{ url_for('home') }}" class="row g-2 align-items-center">
-                    <!-- Campo de busca com ícone -->
-                    <div class="col-auto">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" name="busca" id="busca" class="form-control"
-                                   placeholder="Buscar descrição..." value="{{ request.args.get('busca', '') }}">
-                        </div>
-                    </div>
+        <div class="row mb-4">
+            <!-- Filtros de busca -->
+            <div class="col-lg-9">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body pt-5">
+                        <form method="get" action="{{ url_for('home') }}" class="row gy-2 gx-3 align-items-center">
+                            <!-- Campo de busca -->
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="busca" id="busca" class="form-control"
+                                           placeholder="Buscar descrição..." value="{{ request.args.get('busca', '') }}">
+                                </div>
+                            </div>
 
-                    <!-- Filtro de Status -->
-                    <div class="col-auto">
-                        <select name="status" class="form-select">
-                            <option value="">Todos os Status</option>
-                            <option value="Pendente" {% if request.args.get('status') == 'Pendente' %}selected{% endif %}>Pendente</option>
-                            <option value="Pago" {% if request.args.get('status') == 'Pago' %}selected{% endif %}>Pago</option>
-                            <option value="Agendado" {% if request.args.get('status') == 'Agendado' %}selected{% endif %}>Agendado</option>
-                        </select>
-                    </div>
+                            <!-- Filtro de status -->
+                            <div class="col-md-4">
+                                <select name="status" class="form-select">
+                                    <option value="">Todos os Status</option>
+                                    <option value="Pendente" {% if request.args.get('status') == 'Pendente' %}selected{% endif %}>Pendente</option>
+                                    <option value="Pago" {% if request.args.get('status') == 'Pago' %}selected{% endif %}>Pago</option>
+                                    <option value="Agendado" {% if request.args.get('status') == 'Agendado' %}selected{% endif %}>Agendado</option>
+                                </select>
+                            </div>
 
-                    <!-- Botões -->
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                        {% if request.args.get('status') or request.args.get('busca') %}
-                            <a href="{{ url_for('home') }}" class="btn btn-danger ms-2">Limpar</a>
-                        {% endif %}
+                            <!-- Botões -->
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                                {% if request.args.get('status') or request.args.get('busca') %}
+                                    <a href="{{ url_for('home') }}" class="btn btn-outline-secondary w-100">Limpar</a>
+                                {% endif %}
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-
-            <!-- Coluna: Botões de Exportação -->
-            <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
-                <span class="text-muted small me-2">Baixar como:</span>
-                <div class="btn-group">
-                    <a href="{{ url_for('exportar_dados', formato='xls') }}" class="btn btn-outline-info">
-                        <i class="bi bi-file-earmark-excel"></i> Excel
-                    </a>
-                    <a href="{{ url_for('exportar_dados', formato='json') }}" class="btn btn-outline-info">
-                        <i class="bi bi-code-slash"></i> JSON
-                    </a>
-                    <a href="{{ url_for('exportar_dados', formato='pdf') }}" class="btn btn-outline-info">
-                        <i class="bi bi-file-earmark-pdf"></i> PDF
-                    </a>
                 </div>
             </div>
 
+            <!-- Exportação -->
+            <div class="col-lg-3 d-flex">
+                <div class="card shadow-sm border-0 w-100 h-100">
+                    <div class="card-body d-flex flex-column align-items-center gap-2">
+                        <span class="text-muted small">Exportar como:</span>
+                        <div class="btn-group w-100">
+                            <a href="{{ url_for('exportar_dados', formato='xls') }}" class="btn btn-outline-success">
+                                <i class="bi bi-file-earmark-excel"></i>
+                            </a>
+                            <a href="{{ url_for('exportar_dados', formato='json') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-code-slash"></i>
+                            </a>
+                            <a href="{{ url_for('exportar_dados', formato='pdf') }}" class="btn btn-outline-danger">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Tabela de Débitos -->

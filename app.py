@@ -203,7 +203,7 @@ def credito():
         data = request.form.get("data")
 
         if valor and descricao and tipo and categoria and data:
-            query = "INSERT INTO credito (valor, descricao, tipo, categoria, data) VALUE (?, ?, ?, ?, ?)"
+            query = "INSERT INTO creditos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)"
             parametros = (valor, descricao, tipo, categoria, data)
             executar_consulta(query, parametros, commit=True)
 
@@ -224,7 +224,7 @@ def debito():
         data = request.form.get("data")
 
         if valor and descricao and tipo and categoria and data:
-            query = "INSET INTO debitos (valor, descricao, tipo, categoria, data) VALUE (?, ?, ?, ?, ?)"
+            query = "INSERT INTO debitos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)"
             parametros = (valor, descricao, tipo, categoria, data)
             executar_consulta(query, parametros, commit=True)
 
