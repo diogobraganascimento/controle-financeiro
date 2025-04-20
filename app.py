@@ -7,11 +7,22 @@ import bcrypt
 import pandas as pd
 from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
+from flask_dance.contrib.google import make_google_blueprint, google
 from utils import executar_consulta
 
 
 app = Flask(__name__)
 app.secret_key = 'Q1w2e3r4t5'
+
+
+google_bp = make_google_blueprint(
+    client_id="511880856381-oj0hr6l9doa644ndlmsdls6u6jgdhk6k.apps.googleusercontent.com",
+    client_secret="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",
+    scope=["profile", "email"],
+    redirect_url="/login/google/authorized"
+)
+
+app.register_blueprint(google_bp, url_prefix="/login")
 
 
 # Cria a tabela de usuários
@@ -62,6 +73,23 @@ def login():
         flash("Usuário ou senha inválidos", "danger")
 
     return render_template('login.html')
+
+
+# Rota de Logon/google
+@app.route("/login/google", endpoint="login_google")
+def login_google():
+    if not google.authorized:
+        return redirect(url_for("google.login"))  # google.login vem do blueprint
+
+    resp = google.get("/oauth2/v2/userinfo")
+    if not resp.ok:
+        return "Erro ao acessar dados do Google", 400
+
+    dados = resp.json()
+    email = dados["email"]
+    nome = dados.get("name")
+
+    return f"Bem-vindo(a), {nome} ({email})"
 
 
 # Rota do Perfil
