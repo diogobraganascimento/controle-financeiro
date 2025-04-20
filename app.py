@@ -8,6 +8,7 @@ import pandas as pd
 from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.contrib.github import make_github_blueprint, github
 from utils import executar_consulta
 
 
@@ -22,7 +23,14 @@ google_bp = make_google_blueprint(
     redirect_url="/login/google/authorized"
 )
 
-app.register_blueprint(google_bp, url_prefix="/login")
+github_bp = make_github_blueprint(
+    client_id="Ov23liowgLsKjMG17f8g",
+    client_secret="f1d6f82f65a12bcb80f22407faed255e2e425a2a",
+    redirect_url="/login/github/authorized",
+)
+
+app.register_blueprint(google_bp, url_prefix="/login")  # Google
+app.register_blueprint(github_bp, url_prefix="/login")  # GitHub
 
 
 # Cria a tabela de usuários
@@ -79,7 +87,7 @@ def login():
 @app.route("/login/google", endpoint="login_google")
 def login_google():
     if not google.authorized:
-        return redirect(url_for("google.login"))  # google.login vem do blueprint
+        return redirect(url_for("google.login"))
 
     resp = google.get("/oauth2/v2/userinfo")
     if not resp.ok:
@@ -90,6 +98,24 @@ def login_google():
     nome = dados.get("name")
 
     return f"Bem-vindo(a), {nome} ({email})"
+
+
+# Rota de Logon/Github
+@app.route("/login/github", endpoint="login_github")
+def login_github():
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+
+    resp = github.get("/user")
+    if not resp.ok:
+        return "Erro ao acessar GitHub", 400
+
+    dados = resp.json()
+    nome = dados.get("name") or dados.get("login")
+    email = dados.get("email", "E-mail não disponível")
+
+    return f"Bem-vindo(a), {nome} ({email})"
+
 
 
 # Rota do Perfil

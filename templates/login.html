@@ -29,10 +29,17 @@
                 <a href="{{ url_for('cadastro') }}" class="btn btn-outline-secondary">Criar Conta</a>
                 <a href="{{ url_for('welcome') }}" class="btn btn-outline-danger">Voltar</a>
             </div>
-            <div class="d-grid gap-2 mt-3">
-                <a href="{{ url_for('login_google') }}" class="btn btn-outline-danger">
-                    <i class="bi bi-google"></i> Entrar com Google
-                </a>
+            <div class="text-center">
+                <p class="mb-2 fs-5">Entrar com</p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('login_google') }}">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="40">
+                    </a>
+                    <a href="{{ url_for('login_github') }}">
+                        <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub" width="40">
+                    </a>
+                </div>
             </div>
         </form>
     </div>
