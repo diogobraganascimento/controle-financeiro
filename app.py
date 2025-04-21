@@ -1,8 +1,7 @@
-import os.path
-import json
-from io import BytesIO
 import sqlite3
 import bcrypt
+import json
+from io import BytesIO
 
 import pandas as pd
 from fpdf import FPDF
@@ -26,7 +25,7 @@ google_bp = make_google_blueprint(
 github_bp = make_github_blueprint(
     client_id="Ov23liowgLsKjMG17f8g",
     client_secret="f1d6f82f65a12bcb80f22407faed255e2e425a2a",
-    redirect_url="/login/github/authorized",
+    redirect_url="http://localhost:5000/login/github/authorized",
 )
 
 app.register_blueprint(google_bp, url_prefix="/login")  # Google
@@ -115,7 +114,6 @@ def login_github():
     email = dados.get("email", "E-mail não disponível")
 
     return f"Bem-vindo(a), {nome} ({email})"
-
 
 
 # Rota do Perfil
@@ -485,4 +483,7 @@ def toggle_admin(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        ssl_context=('cert.pem', 'private.pem'),
+        debug=True
+    )
