@@ -8,7 +8,7 @@ from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.contrib.github import make_github_blueprint, github
-from utils import executar_consulta
+from utils import executar_consulta, get_usuario_id
 
 
 app = Flask(__name__)
@@ -189,7 +189,8 @@ def welcome():
 # Rota Home
 @app.route("/home", methods=["GET"])
 def home():
-    if 'usuario' not in session:
+    usuario_id = get_usuario_id()
+    if not usuario_id:
         return redirect(url_for('login'))
 
     conexao = sqlite3.connect('financeiro.db')
@@ -200,8 +201,8 @@ def home():
     data_filtro = request.args.get("data")
     busca = request.args.get("busca", "").lower()
 
-    query = "SELECT * FROM debitos WHERE 1=1"
-    params = []
+    query = "SELECT * FROM debitos WHERE usuario_id = ?"
+    params = [usuario_id]
 
     if status_filtro:
         query += " AND status = ?"
@@ -218,12 +219,20 @@ def home():
     if busca:
         tabela_debitos = [debito for debito in tabela_debitos if busca in debito[2].lower()]
 
-    # Pega os dados de crédito
-    creditos = executar_consulta("SELECT categoria, SUM(valor) FROM creditos GROUP BY categoria", fetchall=True)
+    # Créditos (somente do usuário)
+    creditos = executar_consulta(
+        "SELECT categoria, SUM(valor) FROM creditos WHERE usuario_id = ? GROUP BY categoria",
+        (usuario_id,),
+        fetchall=True
+    )
     total_creditos = sum([row[1] for row in creditos])
 
-    # Pega os dados de débitos
-    debitos = executar_consulta("SELECT categoria, SUM(valor) FROM debitos GROUP BY categoria", fetchall=True)
+    # Débitos (somente do usuário)
+    debitos = executar_consulta(
+        "SELECT categoria, SUM(valor) FROM debitos WHERE usuario_id = ? GROUP BY categoria",
+        (usuario_id,),
+        fetchall=True
+    )
     total_debitos = sum([row[1] for row in debitos])
 
     conexao.close()
@@ -247,6 +256,11 @@ def admin_dashboard():
 # Rota para a página de crédito e salvar dados
 @app.route("/credito", methods=["GET", "POST"])
 def credito():
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    usuario_id = session['usuario']['id']
+
     if request.method == "POST":
         valor = request.form.get("valor")
         descricao = request.form.get("descricao")
@@ -255,12 +269,18 @@ def credito():
         data = request.form.get("data")
 
         if valor and descricao and tipo and categoria and data:
-            query = "INSERT INTO creditos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)"
-            parametros = (valor, descricao, tipo, categoria, data)
+            query = """
+                INSERT INTO creditos (valor, descricao, tipo, categoria, data, usuario_id)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """
+            parametros = (valor, descricao, tipo, categoria, data, usuario_id)
             executar_consulta(query, parametros, commit=True)
+            flash("Crédito cadastrado com sucesso!", "success")
+            return redirect(url_for('credito'))
 
-    # Buscar todos os registros da tabela de crédito
-    creditos = executar_consulta("SELECT * FROM creditos", fetchall=True)
+    # Buscar registros apenas do usuário logado
+    query_creditos = "SELECT * FROM creditos WHERE usuario_id = ?"
+    creditos = executar_consulta(query_creditos, (usuario_id,), fetchall=True)
 
     return render_template("credito.html", creditos=creditos)
 
@@ -268,6 +288,11 @@ def credito():
 # Rota para página de débito e salvar dados
 @app.route("/debito", methods=["GET", "POST"])
 def debito():
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    usuario_id = session['usuario']['id']
+
     if request.method == "POST":
         valor = request.form.get("valor")
         descricao = request.form.get("descricao")
@@ -276,12 +301,17 @@ def debito():
         data = request.form.get("data")
 
         if valor and descricao and tipo and categoria and data:
-            query = "INSERT INTO debitos (valor, descricao, tipo, categoria, data) VALUES (?, ?, ?, ?, ?)"
-            parametros = (valor, descricao, tipo, categoria, data)
+            query = """
+                INSERT INTO debitos (valor, descricao, tipo, categoria, data, usuario_id)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """
+            parametros = (valor, descricao, tipo, categoria, data, usuario_id)
             executar_consulta(query, parametros, commit=True)
+            flash("Débito cadastrado com sucesso!", "success")
 
     # Buscar todos os registros da tabela de crédito
-    debitos = executar_consulta("SELECT * FROM debitos", fetchall=True)
+    query_debitos = "SELECT * FROM debitos WHERE usuario_id = ?"
+    debitos = executar_consulta(query_debitos, (usuario_id,), fetchall=True)
 
     return render_template("debito.html", debitos=debitos)
 
@@ -346,6 +376,9 @@ def editar_debito(id):
 # Rota para excluir dados da tabela crédito
 @app.route("/excluir_credito/<int:id>")
 def excluir_credito(id):
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
     query = "DELETE FROM creditos WHERE id = ?"
     executar_consulta(query, (id,), commit=True)
     return redirect(url_for("credito"))
@@ -354,6 +387,9 @@ def excluir_credito(id):
 # Rota para excluir dados da tabela débito
 @app.route("/excluir_debito/<int:id>")
 def excluir_debito(id):
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
     query = "DELETE FROM debitos WHERE id = ?"
     executar_consulta(query, (id,), commit=True)
     return redirect(url_for("debito"))

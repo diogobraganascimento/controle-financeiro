@@ -1,4 +1,5 @@
 import sqlite3
+from flask import session
 
 
 def executar_consulta(query, parametros=(), fetchone=False, fetchall=False, commit=False):
@@ -17,3 +18,7 @@ def executar_consulta(query, parametros=(), fetchone=False, fetchall=False, comm
 
     conexao.close()
     return resultado
+
+
+def get_usuario_id():
+    return session.get('usuario', {}).get('id')
