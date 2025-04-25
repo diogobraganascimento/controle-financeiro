@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow-lg p-4 w-100" style="max-width: 800px;">
+    <div class="card shadow p-5 w-100" style="max-width: 900px;">
         <h2 class="text-center mb-4">Criar Conta</h2>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -22,65 +22,66 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Nome *</label>
-                    <input type="text" class="form-control" name="nome" required>
+                    <input type="text" name="nome" class="form-control" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Sobrenome *</label>
-                    <input type="text" class="form-control" name="sobrenome" required>
+                    <input type="text" name="sobrenome" class="form-control" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">E-mail *</label>
-                    <input type="email" class="form-control" name="email" required>
+                    <input type="email" name="email" class="form-control" id="email" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">CPF</label>
-                    <input type="text" class="form-control" name="cpf" maxlength="14">
+                    <input type="text" name="cpf" class="form-control" maxlength="14">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Data de Nascimento</label>
-                    <input type="date" class="form-control" name="data_nascimento">
+                    <input type="date" name="data_nascimento" class="form-control">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Celular</label>
-                    <input type="tel" class="form-control" name="celular" placeholder="(00) 00000-0000">
+                    <input type="tel" name="celular" class="form-control" placeholder="(00) 00000-0000">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Cidade</label>
-                    <input type="text" class="form-control" name="cidade">
+                    <input type="text" name="cidade" class="form-control">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Estado</label>
-                    <input type="text" class="form-control" name="estado">
+                    <input type="text" name="estado" class="form-control">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Como conheceu a marca?</label>
-                    <input type="text" class="form-control" name="como_conheceu">
+                    <input type="text" name="como_conheceu" class="form-control">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Canal preferencial</label>
-                    <select class="form-select" name="canal_preferencial">
+                    <select name="canal_preferencial" class="form-select">
                         <option value="email">E-mail</option>
                         <option value="celular">Celular</option>
                     </select>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Nome de Usuário *</label>
-                    <input type="text" class="form-control" name="username" required>
-                </div>
-
-                <div class="col-md-6">
                     <label class="form-label">Senha *</label>
-                    <input type="password" class="form-control" name="password" required>
+                    <input type="password" name="password" class="form-control" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Confirmar Senha *</label>
-                    <input type="password" class="form-control" name="confirm_password" required>
+                    <input type="password" name="confirm_password" class="form-control" required>
                 </div>
+
+                <div class="mb-3" id="username-group">
+                    <label>Nome de Usuário</label>
+                    <input type="text" class="form-control" id="username" name="username" readonly>
+                </div>
+
 
                 <div class="col-12">
                     <div class="form-check">
@@ -108,13 +109,9 @@
         <h5 class="modal-title" id="modalTermosLabel">Termos de Uso</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
-      <div class="modal-body" style="text-align: justify;">
-        <p><strong>1. Coleta de dados:</strong> Ao se cadastrar, você autoriza a coleta de dados para fins de identificação e comunicação.</p>
-        <p><strong>2. Uso das informações:</strong> Seus dados serão utilizados exclusivamente para melhorar a experiência na plataforma e facilitar o contato, quando necessário.</p>
-        <p><strong>3. Compartilhamento:</strong> Não compartilhamos suas informações com terceiros, exceto quando exigido por lei.</p>
-        <p><strong>4. Segurança:</strong> Todas as informações são armazenadas com segurança e protegidas contra acesso não autorizado.</p>
-        <p><strong>5. Responsabilidade:</strong> Você é responsável pelas informações fornecidas e por manter a confidencialidade de sua senha.</p>
-        <p><strong>6. Aceite:</strong> Ao marcar a opção, você declara que leu, entendeu e concorda com os termos.</p>
+      <div class="modal-body text-justify">
+        <!-- Aqui você pode colocar seu texto de termos que criamos antes -->
+        <p><strong>1. Coleta de dados:</strong> ...</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>

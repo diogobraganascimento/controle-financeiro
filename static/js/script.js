@@ -213,3 +213,33 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+/**
+ * Gerador e exibidor automático de nome de usuário
+ *
+ * Ao digitar o e-mail, o campo de nome de usuário aparece e é preenchido automaticamente
+ * com o prefixo do e-mail (parte antes do "@"). O campo permanece somente leitura
+ * e oculto até que o e-mail comece a ser preenchido.
+ *
+ * @event input - Escuta o input do e-mail e atualiza o username.
+ * @function DOMContentLoaded - Garante que o script será executado após o DOM estar carregado.
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    const emailInput = document.getElementById('email');
+    const usernameGroup = document.getElementById('username-group');
+    const usernameInput = document.getElementById('username');
+
+    // Inicialmente oculta o grupo do username
+    usernameGroup.style.display = 'none';
+
+    emailInput.addEventListener('input', function () {
+        const prefix = emailInput.value.split('@')[0];
+
+        if (prefix) {
+            usernameInput.value = prefix;
+            usernameGroup.style.display = 'block';
+        } else {
+            usernameGroup.style.display = 'none';
+        }
+    });
+});
