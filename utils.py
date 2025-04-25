@@ -1,4 +1,6 @@
 import sqlite3
+
+import bcrypt
 from flask import session
 
 
@@ -22,3 +24,7 @@ def executar_consulta(query, parametros=(), fetchone=False, fetchall=False, comm
 
 def get_usuario_id():
     return session.get('usuario', {}).get('id')
+
+
+def criar_senha_hash(senha):
+    return bcrypt.hashpw(senha.enconde('utf-8'), bcrypt.gensalt())

@@ -3,34 +3,123 @@
 {% block title %}Cadastro - Controle Financeiro{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" id="contentCadastro">
-    <div class="card shadow p-4" id="cardCadastro">
-        <h2 class="text-center mb-4">Cadastro</h2>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 800px;">
+        <h2 class="text-center mb-4">Criar Conta</h2>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
         <form method="POST">
-            <div class="mb-3">
-                <label>Usuário</label>
-                <input type="text" class="form-control" name="username" required>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nome *</label>
+                    <input type="text" class="form-control" name="nome" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Sobrenome *</label>
+                    <input type="text" class="form-control" name="sobrenome" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">E-mail *</label>
+                    <input type="email" class="form-control" name="email" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">CPF</label>
+                    <input type="text" class="form-control" name="cpf" maxlength="14">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Data de Nascimento</label>
+                    <input type="date" class="form-control" name="data_nascimento">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Celular</label>
+                    <input type="tel" class="form-control" name="celular" placeholder="(00) 00000-0000">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Cidade</label>
+                    <input type="text" class="form-control" name="cidade">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Estado</label>
+                    <input type="text" class="form-control" name="estado">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Como conheceu a marca?</label>
+                    <input type="text" class="form-control" name="como_conheceu">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Canal preferencial</label>
+                    <select class="form-select" name="canal_preferencial">
+                        <option value="email">E-mail</option>
+                        <option value="celular">Celular</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Nome de Usuário *</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Senha *</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Confirmar Senha *</label>
+                    <input type="password" class="form-control" name="confirm_password" required>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="aceita_termos" id="aceita_termos" required>
+                        <label class="form-check-label" for="aceita_termos">
+                            Aceito os <a href="#" data-bs-toggle="modal" data-bs-target="#modalTermos">Termos de Uso</a>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-5">Cadastrar</button>
+                    <a href="{{ url_for('login') }}" class="btn btn-link ms-3">Já tenho conta</a>
+                </div>
             </div>
-            <div class="mb-3">
-                <label>Senha</label>
-                <input type="password" class="form-control" name="password" required>
-            </div>
-            <div class="mb-3">
-                <label>Confirmar Senha</label>
-                <input type="password" class="form-control" name="confirm_password" required>
-            </div>
-            <button class="btn btn-success">Cadastrar</button>
-            <a href="{{ url_for('login') }}" class="btn-secondary ms-2">Já tenho conta</a>
         </form>
     </div>
+</div>
+
+<!-- Modal dos Termos -->
+<div class="modal fade" id="modalTermos" tabindex="-1" aria-labelledby="modalTermosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTermosLabel">Termos de Uso</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body" style="text-align: justify;">
+        <p><strong>1. Coleta de dados:</strong> Ao se cadastrar, você autoriza a coleta de dados para fins de identificação e comunicação.</p>
+        <p><strong>2. Uso das informações:</strong> Seus dados serão utilizados exclusivamente para melhorar a experiência na plataforma e facilitar o contato, quando necessário.</p>
+        <p><strong>3. Compartilhamento:</strong> Não compartilhamos suas informações com terceiros, exceto quando exigido por lei.</p>
+        <p><strong>4. Segurança:</strong> Todas as informações são armazenadas com segurança e protegidas contra acesso não autorizado.</p>
+        <p><strong>5. Responsabilidade:</strong> Você é responsável pelas informações fornecidas e por manter a confidencialidade de sua senha.</p>
+        <p><strong>6. Aceite:</strong> Ao marcar a opção, você declara que leu, entendeu e concorda com os termos.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

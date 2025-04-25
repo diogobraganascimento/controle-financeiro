@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Termos de Uso{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Termos de Uso</h2>
+
+    <p>Bem-vindo ao nosso sistema de controle financeiro.</p>
+
+    <h5>1. Coleta e Uso de Informações</h5>
+    <p>Coletamos dados como nome, e-mail, CPF (opcional) e outras informações fornecidas no momento do cadastro. Esses dados são utilizados apenas para fins de identificação do usuário e personalização da experiência na plataforma.</p>
+
+    <h5>2. Segurança</h5>
+    <p>As senhas são armazenadas de forma criptografada e os dados dos usuários são protegidos por boas práticas de segurança da informação.</p>
+
+    <h5>3. Responsabilidade do Usuário</h5>
+    <p>Você é responsável por manter sua senha segura e por todas as atividades realizadas com sua conta.</p>
+
+    <h5>4. Compartilhamento de Dados</h5>
+    <p>Seus dados não serão compartilhados com terceiros sem sua autorização, exceto quando exigido por lei.</p>
+
+    <h5>5. Alterações</h5>
+    <p>Reservamo-nos o direito de modificar estes termos a qualquer momento. Quaisquer mudanças serão comunicadas aos usuários.</p>
+
+    <h5>6. Aceitação dos Termos</h5>
+    <p>Ao marcar a opção "Aceito os Termos de Uso", você concorda com todos os pontos aqui descritos.</p>
+
+    <p class="mt-4"><a href="{{ url_for('cadastro') }}" class="btn btn-primary">Voltar ao Cadastro</a></p>
+</div>
+{% endblock %}

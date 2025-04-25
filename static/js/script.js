@@ -174,3 +174,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+/**
+* Validação do formulário de cadastro de usuário
+*
+* - Verifica se as senhas coincidem
+* - Confere se os termos de uso foram aceitos
+* - Garante que o e-mail contém "@"
+* - Impede envio se houver erros
+*/
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("formCadastro");
+
+    if(form) {
+        form.addEventListener("submit", function (event) {
+            const senha = form.querySelector('input[name="senha"]').value;
+            const comfirmarSenha = form.querySelector('input[name="confirmar_senha"]').value;
+            const termosAceitos = form.querySelector('input[name="termos"]').checked;
+            const email = form.querySelector('input[name="email"]').value;
+
+            if (senha != confirmarSenha) {
+                alert("As senhas não coincidem!");
+                event.preventDefault();
+                return;
+            }
+
+            if (!termosAceitos) {
+                alert("Você deve aceitar os termos de uso para continuar.");
+                event.preventDefault();
+                return;
+            }
+
+            if (!email.includes('@')) {
+                alert("Digite um e-mail válido.");
+                event.preventDefault();
+                return;
+            }
+        });
+    }
+});

@@ -8,7 +8,7 @@ from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.contrib.github import make_github_blueprint, github
-from utils import executar_consulta, get_usuario_id
+from utils import executar_consulta, get_usuario_id, criar_senha_hash
 
 
 app = Flask(__name__)
@@ -150,23 +150,53 @@ def desativar_conta(id):
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
-        usuario = request.form['username']
-        senha = request.form['password']
-        confirmar_senha = request.form['confirm_password']
+        nome = request.form.get('nome')
+        sobrenome = request.form.get('sobrenome')
+        cpf = request.form.get('cpf')
+        nascimento = request.form.get('nascimento')
+        cidade = request.form.get('cidade')
+        estado = request.form.get('estado')
+        celular = request.form.get('celular')
+        email = request.form.get('email')
+        origem = request.form.get('origem')
+        canal = request.form.get('canal')
+        username = email.split('@')[0]
+        senha = request.form.get('senha')
+        confirmar_senha = request.form.get('confirmar_senha')
+        termos = request.form.get('termos')
 
-        if senha != confirmar_senha:
-            flash("As senhas não coincidem", "danger")
+        if not all([nome, sobrenome, email, senha, confirmar_senha]):
+            flash("Por favor, preencha todos os campos obrigatórios.", "danger")
             return redirect(url_for('cadastro'))
 
-        senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
+        if senha != confirmar_senha:
+            flash("As senhas não coincidem.", "danger")
+            return redirect(url_for('cadastro'))
+
+        if termos != 'sim':
+            flash("Você precisa aceitar os termos de uso.", "warning")
+            return redirect(url_for('cadastro'))
+
+        senha_hash = criar_senha_hash(senha)
 
         try:
-            query = "INSERT INTO usuarios (username, senha_hash) VALUES (?, ?)"
-            executar_consulta(query, (usuario, senha_hash), commit=True)
+            query = """
+                INSERT INTO usuarios (
+                    nome, sobrenome, cpf, nascimento, cidade, estado, celular, 
+                    email, origem, canal, username, senha_hash
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            executar_consulta(query, (
+                nome, sobrenome, cpf, nascimento, cidade, estado, celular,
+                email, origem, canal, username, senha_hash
+            ), commit=True)
+
             flash("Cadastro realizado com sucesso! Faça login.", "success")
             return redirect(url_for('login'))
+
         except sqlite3.IntegrityError:
-            flash("Usuário já existe", "warning")
+            flash("Usuário ou e-mail já cadastrado.", "warning")
             return redirect(url_for('cadastro'))
 
     return render_template('cadastro.html')
@@ -516,6 +546,12 @@ def toggle_admin(id):
         )
 
     return redirect(url_for('listar_usuarios'))
+
+
+# Rota do termo
+@app.route('/termos')
+def termos():
+    return render_template("termos.html")
 
 
 if __name__ == "__main__":
