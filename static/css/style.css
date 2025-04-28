@@ -43,11 +43,27 @@ canvas {
 #cardLogin,
 #cardCadastro {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     background-color: var(--fundo-card);
     border-radius: 1rem;
     padding: 2rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+#cardCadastro {
+    max-width: 800px;
+}
+
+
+#cadastroForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Campos que devem ocupar toda a linha */
+.full-width {
+    grid-columns: 1 / -1;
 }
 
 /* Área de contúdo principal do Login e Cadastro */
@@ -72,4 +88,11 @@ canvas {
 .form-check-label {
     margin-left: 0.1rem;
     color: var(--texto-principal);
+}
+
+/* Responsivo para telas pequenas */
+@media (max-width: 600px) {
+    #cadastroForm {
+        grid-template-columns: 1fr;
+    }
 }
