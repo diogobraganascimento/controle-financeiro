@@ -153,16 +153,16 @@ def cadastro():
         nome = request.form.get('nome')
         sobrenome = request.form.get('sobrenome')
         cpf = request.form.get('cpf')
-        nascimento = request.form.get('nascimento')
+        nascimento = request.form.get('data_nascimento')
         cidade = request.form.get('cidade')
         estado = request.form.get('estado')
         celular = request.form.get('celular')
         email = request.form.get('email')
-        origem = request.form.get('origem')
-        canal = request.form.get('canal')
+        origem = request.form.get('como_conheceu')
+        canal = request.form.get('canal_preferido')
         username = email.split('@')[0]
-        senha = request.form.get('senha')
-        confirmar_senha = request.form.get('confirmar_senha')
+        senha = request.form.get('password')
+        confirmar_senha = request.form.get('confirm_password')
         termos = request.form.get('termos')
 
         if not all([nome, sobrenome, email, senha, confirmar_senha]):
@@ -173,7 +173,7 @@ def cadastro():
             flash("As senhas não coincidem.", "danger")
             return redirect(url_for('cadastro'))
 
-        if termos != 'sim':
+        if termos != 'on':
             flash("Você precisa aceitar os termos de uso.", "warning")
             return redirect(url_for('cadastro'))
 

@@ -56,124 +56,128 @@ const textoCentral = {
 };
 
 /**
- * Inicializa os gráficos de Créditos, Débitos e o gráfico comparativo entre Créditos e Débitos quando o DOM estiver completamente carregado.
+ * Inicializa os gráficos de Créditos, Débitos e o gráfico comparativo entre Créditos e Débitos após o carregamento completo do DOM.
  *
- * - Cria dois gráficos do tipo "doughnut": um para os Créditos e outro para os Débitos, usando os dados fornecidos.
- * - O gráfico de Créditos exibe a distribuição dos valores de crédito com diferentes cores.
- * - O gráfico de Débitos exibe a distribuição dos valores de débito com diferentes cores.
- * - Ambos os gráficos possuem um plugin customizado (textoCentral) para exibir o total correspondente no centro do gráfico.
+ * - Cria dois gráficos do tipo "doughnut": um para os Créditos e outro para os Débitos, utilizando os dados fornecidos.
+ * - O gráfico de Créditos exibe a distribuição dos valores de crédito em diferentes cores.
+ * - O gráfico de Débitos exibe a distribuição dos valores de débito em diferentes cores.
+ * - Ambos os gráficos utilizam um plugin personalizado (textoCentral) para exibir o total correspondente no centro do gráfico.
+ * - Calcula a porcentagem de Créditos e Débitos em relação ao total combinado e exibe um gráfico de barras horizontal para comparação.
  *
- * Além disso, a função calcula a porcentagem de Créditos e Débitos em relação ao total combinado e exibe um gráfico de barras horizontal
- * (comparativo entre os Créditos e Débitos), com as porcentagens e valores totais.
- *
- * A função é executada apenas após o carregamento completo do DOM, garantindo que todos os elementos HTML necessários estejam disponíveis.
+ * Observação: Esta função é executada apenas após o evento de carregamento completo do DOM, garantindo que todos os elementos HTML estejam disponíveis.
  *
  * @event DOMContentLoaded - Dispara após o carregamento completo do HTML.
  */
 document.addEventListener('DOMContentLoaded', function () {
-    const dadosCredito = {
-        labels: creditosLabels,
-        datasets: [{
-            data: creditosValores,
-            backgroundColor: ['#4caf50', '#81c784', '#a5d6a7', '#c8e6c9']
-        }]
-    };
+    if (typeof creditosLabels !== 'undefined' && typeof creditosValores !== 'undefined' &&
+        typeof debitosLabels !== 'undefined' && typeof debitosValores !== 'undefined' &&
+        typeof totalCreditos !== 'undefined' && typeof totalDebitos !== 'undefined') {
 
-    const dadosDebito = {
-        labels: debitosLabels,
-        datasets: [{
-            data: debitosValores,
-            backgroundColor: ['#f44336', '#e57373', '#ef9a9a', '#ffcdd2']
-        }]
-    };
+        const dadosCredito = {
+            labels: creditosLabels,
+            datasets: [{
+                data: creditosValores,
+                backgroundColor: ['#4caf50', '#81c784', '#a5d6a7', '#c8e6c9']
+            }]
+        };
 
-    new Chart(document.getElementById('graficoCredito'), {
-        type: 'doughnut',
-        data: dadosCredito,
-        options: {
-            plugins: {
-                textoCentral: { total: totalCreditos }
-            }
-        },
-        plugins: [textoCentral]
-    });
+        const dadosDebito = {
+            labels: debitosLabels,
+            datasets: [{
+                data: debitosValores,
+                backgroundColor: ['#f44336', '#e57373', '#ef9a9a', '#ffcdd2']
+            }]
+        };
 
-    new Chart(document.getElementById('graficoDebito'), {
-        type: 'doughnut',
-        data: dadosDebito,
-        options: {
-            plugins: {
-                textoCentral: { total: totalDebitos }
-            }
-        },
-        plugins: [textoCentral]
-    });
-
-    // Gráfico Comparativo de Créditos x Débitos
-    const total = totalCreditos + totalDebitos;
-    const porcentagemCredito = (totalCreditos / total) * 100;
-    const porcentagemDebito = (totalDebitos / total) * 100;
-
-    const ctxComparacao = document.getElementById('graficoComparativo');
-    if (ctxComparacao) {
-        new Chart(ctxComparacao, {
-            type: 'bar',
-            data: {
-                labels: [''],
-                datasets: [
-                    {
-                        label: 'Créditos',
-                        data: [porcentagemCredito],
-                        backgroundColor: '#4caf50',
-                        stack: 'stack1'
-                    },
-                    {
-                        label: 'Débitos',
-                        data: [porcentagemDebito],
-                        backgroundColor: '#f44336',
-                        stack: 'stack1'
-                    }
-                ]
-            },
+        new Chart(document.getElementById('graficoCredito'), {
+            type: 'doughnut',
+            data: dadosCredito,
             options: {
-                indexAxis: 'y',
-                responsive: true,
-                elements: {
-                    bar: {
-                        barThickness: 100
-                    }
-                },
                 plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                const valor = context.dataset.label === 'Créditos' ? totalCreditos : totalDebitos;
-                                return `${context.dataset.label}: R$ ${valor.toFixed(2)}`;
-                            }
+                    textoCentral: { total: totalCreditos }
+                }
+            },
+            plugins: [textoCentral]
+        });
+
+        new Chart(document.getElementById('graficoDebito'), {
+            type: 'doughnut',
+            data: dadosDebito,
+            options: {
+                plugins: {
+                    textoCentral: { total: totalDebitos }
+                }
+            },
+            plugins: [textoCentral]
+        });
+
+        // Gráfico Comparativo de Créditos x Débitos
+        const total = totalCreditos + totalDebitos;
+        const porcentagemCredito = (totalCreditos / total) * 100;
+        const porcentagemDebito = (totalDebitos / total) * 100;
+
+        const ctxComparacao = document.getElementById('graficoComparativo');
+        if (ctxComparacao) {
+            new Chart(ctxComparacao, {
+                type: 'bar',
+                data: {
+                    labels: [''],
+                    datasets: [
+                        {
+                            label: 'Créditos',
+                            data: [porcentagemCredito],
+                            backgroundColor: '#4caf50',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: 'Débitos',
+                            data: [porcentagemDebito],
+                            backgroundColor: '#f44336',
+                            stack: 'stack1'
                         }
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
+                    ]
                 },
-                scales: {
-                    x: {
-                        stacked: true,
-                        ticks: {
-                            callback: function (value) {
-                                return value + '%';
-                            },
-                            max: 100
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    elements: {
+                        bar: {
+                            barThickness: 100
                         }
                     },
-                    y: {
-                        stacked: true
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const valor = context.dataset.label === 'Créditos' ? totalCreditos : totalDebitos;
+                                    return `${context.dataset.label}: R$ ${valor.toFixed(2)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return value + '%';
+                                },
+                                max: 100
+                            }
+                        },
+                        y: {
+                            stacked: true
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 });
+
 
 /**
 * Validação do formulário de cadastro de usuário

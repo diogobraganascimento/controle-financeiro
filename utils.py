@@ -27,4 +27,4 @@ def get_usuario_id():
 
 
 def criar_senha_hash(senha):
-    return bcrypt.hashpw(senha.enconde('utf-8'), bcrypt.gensalt())
+    return bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
