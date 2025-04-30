@@ -36,7 +36,7 @@
             </div>
 
             <!-- USERNAME -->
-            <div class="form-floating full-width" id="username-group" style="display:none;">
+            <div class="form-floating full-width" id="username-group" style="height: 0; transition: height 0.3s ease;">
                 <input type="text" class="form-control" name="username" id="username" readonly>
                 <label for="username">Nome de Usuário</label>
             </div>
@@ -107,32 +107,27 @@
             </div>
 
             <!-- BOTÕES -->
-            <div class="d-grid gap-2 full-width mt-3">
-                <button class="btn btn-success" type="submit">Cadastrar</button>
-                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary">Já tenho conta</a>
+            <div class="d-flex justify-content-between gap-2 mt-3">
+                <button class="btn btn-success w-50" type="submit">Cadastrar</button>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary w-50 text-center">Já tenho conta</a>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal dos Termos -->
-<div class="modal fade" id="modalTermos" tabindex="-1" aria-labelledby="modalTermosLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+<!-- Modal de Erro -->
+<div class="modal fade" id="modalErro" tabindex="-1" aria-labelledby="modalErroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalTermosLabel">Termos de Uso</h5>
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalErroLabel">Erro</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
-      <div class="modal-body text-justify">
-          <p><strong>1. Coleta de dados:</strong> Ao se cadastrar, você autoriza a coleta de dados para fins de identificação e comunicação.</p>
-          <p><strong>2. Uso das informações:</strong> Seus dados serão utilizados exclusivamente para melhorar a experiência na plataforma e facilitar o contato, quando necessário.</p>
-          <p><strong>3. Compartilhamento:</strong> Não compartilhamos suas informações com terceiros, exceto quando exigido por lei.</p>
-          <p><strong>4. Segurança:</strong> Todas as informações são armazenadas com segurança e protegidas contra acesso não autorizado.</p>
-          <p><strong>5. Responsabilidade:</strong> Você é responsável pelas informações fornecidas e por manter a confidencialidade de sua senha.</p>
-          <p><strong>6. Aceite:</strong> Ao marcar a opção, você declara que leu, entendeu e concorda com os termos.</p>
+      <div class="modal-body" id="modalErroMensagem">
+        <!-- Mensagem de erro aparece aqui via JavaScript -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
       </div>
     </div>
   </div>

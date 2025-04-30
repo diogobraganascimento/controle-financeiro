@@ -54,7 +54,6 @@ canvas {
     max-width: 800px;
 }
 
-
 #cadastroForm {
     display: grid;
     grid-template-columns: 1fr 1fr;

@@ -233,17 +233,68 @@ document.addEventListener('DOMContentLoaded', function () {
     const usernameGroup = document.getElementById('username-group');
     const usernameInput = document.getElementById('username');
 
-    // Inicialmente oculta o grupo do username
-    usernameGroup.style.display = 'none';
+    // Oculta o campo reservando espaço (altura 0)
+    // usernameGroup.style.height = '0';
+    //usernameGroup.style.overflow = 'hidden';
+    // usernameGroup.style.transition = 'height 0.3s ease';
 
     emailInput.addEventListener('input', function () {
         const prefix = emailInput.value.split('@')[0];
 
         if (prefix) {
             usernameInput.value = prefix;
-            usernameGroup.style.display = 'block';
+
+            // Exibe com transição suave
+            const scrollHeight = usernameGroup.scrollHeight + 'px';
+            usernameGroup.style.height = scrollHeight;
         } else {
-            usernameGroup.style.display = 'none';
+            // Oculta suavemente
+            usernameGroup.style.height = '0';
+        }
+    });
+});
+
+/**
+ * Valida a senha do formulário de cadastro após o carregamento completo do DOM.
+ *
+ * - Verifica se a senha inserida atende aos critérios de segurança definidos:
+ *   - Mínimo de 8 caracteres
+ *   - Pelo menos uma letra maiúscula
+ *   - Pelo menos uma letra minúscula
+ *   - Pelo menos um número
+ *   - Pelo menos um caractere especial
+ * - Verifica se a confirmação de senha é igual à senha informada.
+ * - Em caso de erro, impede o envio do formulário e exibe uma mensagem de alerta em um modal Bootstrap.
+ * - Utiliza um modal (`#modalErro`) com um campo (`#modalErroMensagem`) para exibir mensagens dinâmicas.
+ *
+ * Observação: Esta função é executada apenas após o evento de carregamento completo do DOM, garantindo que todos os elementos HTML estejam disponíveis.
+ *
+ * @event DOMContentLoaded - Dispara após o carregamento completo do HTML.
+ * @listens submit - Intercepta o envio do formulário para realizar as validações.
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const modalErro = new bootstrap.Modal(document.getElementById('modalErro'));
+    const modalErroMensagem = document.getElementById('modalErroMensagem');
+
+    form.addEventListener('submit', function(event) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!passwordRegex.test(password)) {
+            event.preventDefault();
+            modalErroMensagem.textContent = 'A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um caractere especial.';
+            modalErro.show();
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            event.preventDefault();
+            modalErroMensagem.textContent = 'As senhas não coincidem.';
+            modalErro.show();
+            return;
         }
     });
 });

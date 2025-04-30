@@ -1,6 +1,7 @@
 import sqlite3
 import bcrypt
 import json
+import re
 from io import BytesIO
 
 import pandas as pd
@@ -50,6 +51,12 @@ def criar_tabela_usuarios():
 
 
 criar_tabela_usuarios()
+
+
+def senha_segura(senha):
+    """Valida se a senha é segura conforme regas estabelecidas."""
+    regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+    return re.match(regex, senha)
 
 
 # Rota de Login
@@ -169,8 +176,14 @@ def cadastro():
             flash("Por favor, preencha todos os campos obrigatórios.", "danger")
             return redirect(url_for('cadastro'))
 
-        if senha != confirmar_senha:
-            flash("As senhas não coincidem.", "danger")
+        if not senha_segura(senha):
+            flash("A senha deve conter no mínimo 8 caracteres, incluindo:"
+                      "1 letra maiúscula"
+                      "1 letra minúscula"
+                      "1 número"
+                      "1 carácter especial", "danger")
+            if not senha_segura(senha):
+                flash("As senhas não coincidem.", "danger")
             return redirect(url_for('cadastro'))
 
         if termos != 'on':
