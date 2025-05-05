@@ -3,38 +3,98 @@
 {% block title %}Perfil{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Perfil do Usuário</h2>
-
-    <div class="card">
-        <div class="card-body">
-            <p><strong>Nome de Usuário:</strong> {{ usuario[1] }}</p>
-            <p><strong>Permissão:</strong> {% if usuario[2] %}Administrador{% else %}Usuário comum{% endif %}</p>
-            <p><strong>Status:</strong>
-                {% if usuario[3] %}
-                    <span class="badge bg-success">Ativo</span>
-                {% else %}
-                    <span class="badge bg-danger">Inativo</span>
-                {% endif %}
-            </p>
-
-            <!-- Botão para desativar conta -->
-            {% if usuario[3] %}
-                <button class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#modalDesativar">
-                    Desativar conta
-                </button>
-            {% endif %}
-        </div>
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-user-circle me-2"></i>Perfil do Usuário</h2>
+        <button id="editarBtn" class="btn btn-outline-primary">
+            <i class="fas fa-edit me-1"></i>Editar
+        </button>
     </div>
+
+    <form method="POST" action="{{ url_for('atualizar_perfil') }}">
+        <div class="card shadow-sm">
+            <div class="card-body row g-3">
+                <!-- Informações pessoais -->
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-user"></i> Nome</label>
+                    <input type="text" class="form-control" name="nome" value="{{ usuario['nome'] or '' }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-user-tag"></i> Sobrenome</label>
+                    <input type="text" class="form-control" name="sobrenome" value="{{ usuario['sobrenome'] or '' }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-id-card"></i> CPF</label>
+                    <input type="text" class="form-control" name="cpf" value="{{ usuario['cpf'] or '' }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-calendar-alt"></i> Nascimento</label>
+                    <input type="date" class="form-control" name="nascimento" value="{{ usuario['nascimento'] or '' }}" disabled>
+                </div>
+
+                <!-- Contato e localização -->
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-city"></i> Cidade</label>
+                    <input type="text" class="form-control" name="cidade" value="{{ usuario['cidade'] or '' }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-map-marker-alt"></i> Estado</label>
+                    <input type="text" class="form-control" name="estado" value="{{ usuario['estado'] or '' }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-phone"></i> Celular</label>
+                    <input type="text" class="form-control" name="celular" value="{{ usuario['celular'] or '' }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-envelope"></i> E-mail</label>
+                    <input type="email" class="form-control" name="email" value="{{ usuario['email'] or '' }}" disabled>
+                </div>
+
+                <!-- Preferências -->
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-globe"></i> Origem do Contato</label>
+                    <input type="text" class="form-control" name="origem" value="{{ usuario['origem'] or '' }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-comments"></i> Canal Preferencial</label>
+                    <input type="text" class="form-control" name="canal" value="{{ usuario['canal'] or '' }}" disabled>
+                </div>
+
+                <!-- Login -->
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-user-shield"></i> Nome de Usuário</label>
+                    <input type="text" class="form-control" name="username" value="{{ usuario['username'] }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fas fa-key"></i> Senha</label>
+                    <input type="password" class="form-control" name="senha" value="" placeholder="********" disabled>
+                </div>
+
+                <div class="col-12 text-end mt-3">
+                    <button id="salvarBtn" class="btn btn-success" type="submit" disabled>
+                        <i class="fas fa-save me-1"></i>Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {% if usuario[3] %}
+    <div class="text-end mt-4">
+        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDesativar">
+            <i class="fas fa-user-slash me-1"></i>Desativar Conta
+        </button>
+    </div>
+    {% endif %}
 </div>
 
 <!-- Modal de confirmação -->
 <div class="modal fade" id="modalDesativar" tabindex="-1" aria-labelledby="modalDesativarLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form action="{{ url_for('desativar_conta', id=usuario[0]) }}" method="POST">
+            <form action="{{ url_for('desativar_conta', id=usuario['id']) }}" method="POST">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalDesativarLabel">Confirmar Desativação</h5>
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Confirmar Desativação</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">

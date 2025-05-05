@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def resetar_usuarios():
     # Conecta ao banco de dados
     conn = sqlite3.connect('financeiro.db')

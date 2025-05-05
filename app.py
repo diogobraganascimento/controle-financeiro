@@ -11,10 +11,8 @@ from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.contrib.github import make_github_blueprint, github
 from utils import executar_consulta, get_usuario_id, criar_senha_hash
 
-
 app = Flask(__name__)
 app.secret_key = 'Q1w2e3r4t5'
-
 
 google_bp = make_google_blueprint(
     client_id="511880856381-oj0hr6l9doa644ndlmsdls6u6jgdhk6k.apps.googleusercontent.com",
@@ -132,8 +130,27 @@ def perfil():
 
     usuario_nome = session['usuario']['username']
 
-    query = "SELECT id, username, is_admin, ativo FROM usuarios WHERE username = ?"
-    usuario = executar_consulta(query, (usuario_nome,), fetchone=True)
+    query = """
+        SELECT id, username, is_admin, 
+                ativo, nome, sobrenome, 
+                cpf, nascimento, cidade, 
+                estado, celular, email, 
+                origem, canal
+        FROM usuarios
+        WHERE username = ?
+    """
+    resultado = executar_consulta(query, (usuario_nome,), fetchone=True)
+
+    if resultado:
+        # Mapeando o resultado para um dicionário com nomes das colunas
+        campos = ['id', 'username', 'admin', 'ativo',
+                 'nome', 'sobrenome', 'cpf', 'nascimento',
+                 'cidade', 'estado', 'celular', 'email',
+                 'origem', 'canal']
+        usuario = dict(zip(campos, resultado))
+    else:
+        flash('Usuário não encontrado.', 'danger')
+        return redirect(url_for('login'))
 
     return render_template('perfil.html', usuario=usuario)
 
@@ -178,10 +195,10 @@ def cadastro():
 
         if not senha_segura(senha):
             flash("A senha deve conter no mínimo 8 caracteres, incluindo:"
-                      "1 letra maiúscula"
-                      "1 letra minúscula"
-                      "1 número"
-                      "1 carácter especial", "danger")
+                  "1 letra maiúscula"
+                  "1 letra minúscula"
+                  "1 número"
+                  "1 carácter especial", "danger")
             if not senha_segura(senha):
                 flash("As senhas não coincidem.", "danger")
             return redirect(url_for('cadastro'))
@@ -411,7 +428,7 @@ def editar_debito(id):
         return redirect(url_for("debito"))
 
     query = "SELECT * FROM debitos WHERE id  = ?"
-    debito =executar_consulta(query, (id,), fetchone=True)
+    debito = executar_consulta(query, (id,), fetchone=True)
 
     return render_template("editar_debito.html", debito=debito)
 
@@ -565,6 +582,66 @@ def toggle_admin(id):
 @app.route('/termos')
 def termos():
     return render_template("termos.html")
+
+
+# Rota de Atualizar Perfil
+from flask import request, session, redirect, url_for, flash
+from werkzeug.security import generate_password_hash
+
+
+@app.route('/atualizar_perfil', methods=['POST'])
+def atualizar_perfil():
+    if 'usuario' not in session:
+        flash('Você precisa estar logado para editar o perfil.', 'warning')
+        return redirect(url_for('login'))
+
+    usuario_id = session['usuario']['id']
+
+    # Coleta dos dados do formulário
+    nome = request.form.get('nome')
+    sobrenome = request.form.get('sobrenome')
+    cpf = request.form.get('cpf')
+    nascimento = request.form.get('nascimento')
+    cidade = request.form.get('cidade')
+    estado = request.form.get('estado')
+    celular = request.form.get('celular')
+    email = request.form.get('email')
+    origem = request.form.get('origem')
+    canal = request.form.get('canal')
+    username = request.form.get('username')
+    senha = request.form.get('senha')
+
+    # Monta a query com ou sem alteração de senha
+    if senha:
+        senha_hash = criar_senha_hash(senha)
+        query = """
+            UPDATE usuarios SET
+                nome = ?, sobrenome = ?, cpf = ?, nascimento = ?, cidade = ?, estado = ?,
+                celular = ?, email = ?, origem = ?, canal = ?, username = ?, senha = ?
+            WHERE id = ?
+        """
+        params = (nome, sobrenome, cpf, nascimento, cidade, estado,
+                  celular, email, origem, canal, username, senha_hash, usuario_id)
+    else:
+        query = """
+            UPDATE usuarios SET
+                nome = ?, sobrenome = ?, cpf = ?, nascimento = ?, cidade = ?, estado = ?,
+                celular = ?, email = ?, origem = ?, canal = ?, username = ?
+            WHERE id = ?
+        """
+        params = (nome, sobrenome, cpf, nascimento, cidade, estado,
+                  celular, email, origem, canal, username, usuario_id)
+
+    try:
+        executar_consulta(query, params, commit=True)
+        flash('Perfil atualizado com sucesso!', 'success')
+        session['usuario']['username'] = username
+    except Exception as e:
+        print("Erro ao atualizar perfil:", e)
+        flash('Erro ao atualizar perfil.', 'danger')
+
+    return redirect(url_for('perfil'))
+
 
 
 if __name__ == "__main__":

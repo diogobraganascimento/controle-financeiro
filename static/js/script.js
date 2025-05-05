@@ -298,3 +298,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+/**
+ * Ativa o modo de edição do formulário de perfil.
+ *
+ * Este script é executado quando o botão "Editar" é clicado. Ele percorre todos
+ * os campos de entrada do formulário e remove o atributo "disabled", permitindo
+ * que sejam editados. Os campos "cpf", "email" e "username" permanecem desabilitados
+ * por questões de integridade dos dados. Ao final, o botão "Salvar" é habilitado
+ * para permitir o envio do formulário.
+ */
+document.getElementById('editarBtn').addEventListener('click', function () {
+    const inputs = document.querySelectorAll('input.form-control');
+    inputs.forEach(input => {
+        if (input.name !== 'cpf' && input.name !== 'email' && input.name !== 'username') {
+            input.removeAttribute('disabled');
+        }
+    });
+    document.getElementById('salvarBtn').removeAttribute('disabled');
+});
