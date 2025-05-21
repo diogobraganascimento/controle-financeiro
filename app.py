@@ -1,15 +1,17 @@
+import os
 import sqlite3
 import bcrypt
 import json
 import re
 from io import BytesIO
+from werkzeug.utils import secure_filename
 
 import pandas as pd
 from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.contrib.github import make_github_blueprint, github
-from utils import executar_consulta, get_usuario_id, criar_senha_hash
+from utils import executar_consulta, get_usuario_id, criar_senha_hash, allowed_file
 
 app = Flask(__name__)
 app.secret_key = 'Q1w2e3r4t5'
@@ -153,6 +155,42 @@ def perfil():
         return redirect(url_for('login'))
 
     return render_template('perfil.html', usuario=usuario)
+
+
+@app.route('/upload_avatar', methods=['POST'])
+def upload_avatar():
+    if 'avatar' not in request.files:
+        flash('Nenhum arquivo enviado.')
+        return redirect(url_for('perfil'))
+
+    file = request.files['avatar']
+
+    if file.filename == '':
+        flash('Nenhum arquivo selecionado.')
+        return redirect(url_for('perfil'))
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.root_path, 'static', 'avatars', filename)
+        file.save(filepath)
+
+        # Atualiza no banco (supondo que 'usuario' é o user logado)
+        conn = sqlite3.connect('financeiro.db')
+        cursor = conn.cursor()
+        cursor.execute('UPDATE usuarios SET avatar = ? WHERE id = ?', (filename, session['usuario']['id']))
+        conn.commit()
+        conn.close()
+
+        # Atualiza na sessão
+        session['usuario']['avatar'] = filename
+
+        flash('Avatar atualizado com sucesso!')
+        return redirect(url_for('perfil'))
+
+    flash('Arquivo não permitido.')
+    return redirect(url_for('perfil'))
+
+
 
 
 # Rota de Desativação da Conta

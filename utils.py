@@ -28,3 +28,7 @@ def get_usuario_id():
 
 def criar_senha_hash(senha):
     return bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}

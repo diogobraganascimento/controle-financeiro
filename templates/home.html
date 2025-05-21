@@ -142,7 +142,7 @@
 <!-- Bloco do Script -->
 {% block scripts %}
 <script>
-  const dadosCredito = {{ dados_creditos|tojson }};
+const dadosCredito = {{ dados_creditos|tojson }};
   const dadosDebito = {{ dados_debitos|tojson }};
   const temaAtual = localStorage.getItem("tema") || "claro";
 
@@ -228,3 +228,5 @@
   criarGraficoDonut("graficoDebito", dadosDebito, coresTema[temaAtual].coresSetoresDebito);
 </script>
 {% endblock %}
+
+

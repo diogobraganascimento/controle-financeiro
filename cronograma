@@ -1,8 +1,4 @@
 ✅ 1. Experiência do Usuário (UX/UI)
-    * Modo escuro/claro com toggle no topo.
-    * Avatar do usuário no perfil e na navbar.
-    * Feedback visual após edições (ex: toast “Perfil atualizado com sucesso”).
-    * Animações leves ao carregar seções (usar animate.css ou framer-motion se futuramente migrar para JS avançado).
     * Melhorar responsividade para celulares (testar com bootstrap ou media queries).
 
 ✅ 2. Segurança

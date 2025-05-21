@@ -1,5 +1,6 @@
 :root {
     --fundo-principal: #ffffff;
+    --fundo-secundario: #121212;
     --fundo-card: #FFFFFF;
     --primaria: #4F9DDE;
     --secundaria: #6FCF97;
@@ -17,6 +18,13 @@ body {
     color: var(--texto-principal);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
+}
+
+/* Botão opcionalmente */
+#toggleTema {
+    position: absolute;
+    top: 10px;
+    right: 20%;
 }
 
 /* Ajustes gerais para canvas */

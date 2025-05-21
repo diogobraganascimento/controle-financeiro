@@ -10,36 +10,58 @@
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                     {% if session['is_admin'] %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                            <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">
+                                Dashboard
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('about') }}">Sobre</a>
+                            <a class="nav-link text-white" href="{{ url_for('about') }}">
+                                Sobre
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('home') }}">Home</a>
+                            <a class="nav-link text-white" href="{{ url_for('home') }}">
+                                Home
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('credito') }}">Crédito</a>
+                            <a class="nav-link text-white" href="{{ url_for('credito') }}">
+                                Crédito
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('debito') }}">Débito</a>
+                            <a class="nav-link text-white" href="{{ url_for('debito') }}">
+                                Débito
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('perfil') }}">Perfil</a>
+                            <a class="nav-link text-white" href="{{ url_for('perfil') }}">
+                                Perfil
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('about') }}">Sobre</a>
+                            <a class="nav-link text-white" href="{{ url_for('about') }}">
+                                Sobre
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
-                <div class="d-flex ms-auto">
+
+                <div class="d-flex ms-auto align-items-center">
                     <span class="text-white me-3">Olá, {{ session['usuario']['username'] }}</span>
-                    <a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">Sair</a>
+                    {% if session['usuario']['avatar'] %}
+                        <img src="{{ url_for('static', filename='avatars/' + session['usuario']['avatar']) }}"
+                             alt="Avatar" width="40" class="rounded-circle img-fluid me-2">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='avatars/default-avatar.png') }}"
+                             alt="Avatar" width="40" class="rounded-circle img-fluid me-2">
+                    {% endif %}
+                    <a class="btn btn-outline-light btn-sm w-100 mb-2m" href="{{ url_for('logout') }}">Sair</a>
                 </div>
             {% else %}
                 <div class="ms-auto">
-                    <a class="btn btn-outline-light btn-sm" href="{{ url_for('login') }}">Entrar</a>
+                    <a class="btn btn-outline-light btn-sm w-100 mb-2" href="{{ url_for('login') }}">Entrar</a>
                 </div>
             {% endif %}
         </div>
