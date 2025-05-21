@@ -295,6 +295,17 @@ def home():
     )
     total_debitos = sum([row[1] for row in debitos])
 
+    # Preparação para Chart.js
+    dados_creditos = {
+        "labels": [c[0] for c in creditos],
+        "valores": [c[1] for c in creditos]
+    }
+
+    dados_debitos = {
+        "labels": [d[0] for d in debitos],
+        "valores": [d[1] for d in debitos]
+    }
+
     conexao.close()
 
     return render_template("home.html",
@@ -302,7 +313,9 @@ def home():
                            debitos=debitos,
                            total_creditos=total_creditos,
                            total_debitos=total_debitos,
-                           tabela_debitos=tabela_debitos)
+                           tabela_debitos=tabela_debitos,
+                           dados_debitos=dados_debitos,
+                           dados_creditos=dados_creditos)
 
 
 # Rota Dashboard
@@ -641,7 +654,6 @@ def atualizar_perfil():
         flash('Erro ao atualizar perfil.', 'danger')
 
     return redirect(url_for('perfil'))
-
 
 
 if __name__ == "__main__":

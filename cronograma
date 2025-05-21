@@ -1,0 +1,117 @@
+✅ 1. Experiência do Usuário (UX/UI)
+    * Modo escuro/claro com toggle no topo.
+    * Avatar do usuário no perfil e na navbar.
+    * Feedback visual após edições (ex: toast “Perfil atualizado com sucesso”).
+    * Animações leves ao carregar seções (usar animate.css ou framer-motion se futuramente migrar para JS avançado).
+    * Melhorar responsividade para celulares (testar com bootstrap ou media queries).
+
+✅ 2. Segurança
+    * Hash de senhas com werkzeug.security ou bcrypt.
+    * Validação de dados no backend (ex: CPF válido, data real).
+    * Proteção contra:
+    * SQL Injection (você já usa parâmetros — continue assim),
+    * CSRF (usar Flask-WTF para formulários).
+    * Criar logs de auditoria (quem fez o quê, quando — em alterações críticas).
+
+✅ 3. Backend / Organização
+    * Separar rotas em blueprints (auth, admin, perfil, etc.).
+    * Criar camada de serviços (services.py) para regras de negócio.
+    * Usar migrations (mesmo com SQLite) com Flask-Migrate.
+    * Padronizar mensagens flash() (ex: tipo + ícone + timeout).
+
+✅ 4. Banco de Dados
+    * Adicionar campos created_at e updated_at com timestamps automáticos.
+    * Criar uma tabela log_acoes para registrar ações do usuário.
+    * Migrar futuramente para PostgreSQL se for escalar.
+
+✅ 5. Funcionalidades Futuras
+    * Sistema de notificações (alertas de mudanças, status etc.).
+    * Área de atendimento (suporte ou histórico de atividades).
+    * Dashboard com gráficos (por exemplo, de acessos, atividades, ou funções mais usadas).
+    * Exportar dados do perfil (PDF ou CSV).
+    * Integração com API externa (ex: CEP → cidade/estado automático).
+
+✅ 6. Qualidade do Código
+    * Adicionar testes automatizados (pytest ou unittest).
+    * Gerar documentação com Sphinx.
+    * Usar .env para variáveis sensíveis (mesmo que SQLite não precise de senha, prepare o ambiente).
+
+
+####### GRAVAÇÃO DO VIDEO #######
+
+✅ Duração ideal: 60 a 90 segundos
+Tempo suficiente para explicar sem cansar o espectador.
+
+✅ Estrutura do Vídeo (Roteiro Completo)
+🎬 1. Abertura (0–10s)
+Mostre a logo do seu app com uma música leve.
+
+Apresente o nome do app e uma frase curta e impactante.
+
+Exemplo narrado ou com texto:
+
+"Bem-vindo ao [Nome do App], o jeito simples e eficiente de controlar suas finanças!"
+
+📱 2. Problema + Solução (10–30s)
+Mostre cenas rápidas (gravações de tela) do dia a dia de alguém se enrolando com planilhas ou papéis.
+
+Corte para seu app resolvendo isso.
+
+Exemplo de narração:
+
+"Esqueça planilhas confusas! Aqui você organiza créditos, débitos e acompanha tudo com gráficos intuitivos."
+
+✅ 3. Principais Funcionalidades (30–60s)
+Mostre a navegação real pelo app:
+
+Cadastro de crédito/débito
+
+Gráficos de pizza
+
+Tela de login e perfil
+
+Dashboard do admin (caso relevante)
+
+Dica: Use balões ou setas com textos curtos como:
+
+"Adicione com um clique"
+"Visualize em tempo real"
+"Controle total do seu dinheiro"
+
+🌙☀️ 4. Diferenciais (60–75s)
+Modo claro/escuro
+
+Design moderno e responsivo
+
+Segurança dos dados
+
+Personalização por perfil
+
+🚀 5. Encerramento (75–90s)
+Reforce o nome do app
+
+Incentive o uso:
+
+“Comece agora. É simples, rápido e gratuito!”
+
+Exiba o endereço do site, botão de login ou link (se for web)
+
+🎥 Como gravar e editar
+Gravação de tela:
+OBS Studio (Grátis): Grave seu app rodando.
+
+Loom ou Screen Studio (Mac): Ideal para vídeos rápidos com zoom automático.
+
+Edição:
+CapCut, Shotcut, DaVinci Resolve (todos gratuitos).
+
+Use cortes rápidos, zoom em botões e fade suave entre as cenas.
+
+Inclua música leve de fundo (uso livre: Pixabay Music).
+
+🧠 Extras que valorizam:
+Legendas automáticas (CapCut ou YouTube Studio)
+
+Ícones animados (grátis no LottieFiles)
+
+Estilo minimalista e direto ao ponto

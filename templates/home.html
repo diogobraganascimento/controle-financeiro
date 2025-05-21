@@ -13,6 +13,9 @@
             <div class="col-md-4 d-flex flex-column align-items-center mb-4">
                 <h4>Créditos</h4>
                 <canvas id="graficoCredito" width="200" height="200"></canvas>
+                {% if not dados_creditos %}
+                    <div class="text-center text-muted mt-3">Sem dados disponíveis para créditos</div>
+                {% endif %}
                 <a href="/credito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
             </div>
 
@@ -20,6 +23,9 @@
             <div class="col-md-4 d-flex flex-column align-items-center mb-4">
                 <h4>Débitos</h4>
                 <canvas id="graficoDebito" width="200" height="200"></canvas>
+                {% if not dados_debitos %}
+                    <div class="text-center text-muted mt-3">Sem dados disponíveis para débitos</div>
+                {% endif %}
                 <a href="/debito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
             </div>
         </div>
@@ -133,13 +139,92 @@
 
 {% endblock %}
 
+<!-- Bloco do Script -->
 {% block scripts %}
 <script>
-    const creditosLabels = {{ creditos | map(attribute=0) | list | tojson }};
-    const creditosValores = {{ creditos | map(attribute=1) | list | tojson }};
-    const debitosLabels = {{ debitos | map(attribute=0) | list | tojson }};
-    const debitosValores = {{ debitos | map(attribute=1) | list | tojson }};
-    const totalCreditos = {{ total_creditos }};
-    const totalDebitos = {{ total_debitos }};
+  const dadosCredito = {{ dados_creditos|tojson }};
+  const dadosDebito = {{ dados_debitos|tojson }};
+  const temaAtual = localStorage.getItem("tema") || "claro";
+
+  const coresTema = {
+    claro: {
+      fundo: "#fff",
+      corFonte: "#000",
+      coresSetores: ["#4caf50", "#81c784", "#c8e6c9"],
+      coresSetoresDebito: ["#f44336", "#e57373", "#ffcdd2"]
+    },
+    escuro: {
+      fundo: "#121212",
+      corFonte: "#fff",
+      coresSetores: ["#66bb6a", "#388e3c", "#1b5e20"],
+      coresSetoresDebito: ["#ef5350", "#c62828", "#b71c1c"]
+    }
+  };
+
+  function criarGraficoDonut(id, dados, cores) {
+    const tema = coresTema[temaAtual];
+    const temDados = dados && dados.labels && dados.labels.length > 0;
+
+    const config = {
+      type: "doughnut",
+      data: temDados ? {
+        labels: dados.labels,
+        datasets: [{
+          data: dados.valores,
+          backgroundColor: cores,
+          borderWidth: 1
+        }]
+      } : {
+        labels: ["Sem dados"],
+        datasets: [{
+          data: [1],
+          backgroundColor: ["#ccc"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            labels: {
+              color: tema.corFonte
+            }
+          },
+          tooltip: {
+            enabled: temDados
+          }
+        },
+        cutout: "70%",
+        responsive: true,
+        maintainAspectRatio: false
+      },
+      plugins: [{
+        id: 'textoCentral',
+        beforeDraw(chart) {
+          if (!temDados) return;
+
+          const { width } = chart;
+          const { ctx } = chart;
+          const total = dados.valores.reduce((a, b) => a + b, 0);
+
+          ctx.save();
+          ctx.font = "bold 16px Arial";
+          ctx.fillStyle = tema.corFonte;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(`R$ ${total.toFixed(2)}`, width / 2, chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2);
+          ctx.restore();
+        }
+      }]
+    };
+
+    const canvas = document.getElementById(id);
+    if (canvas) {
+      new Chart(canvas, config);
+    }
+  }
+
+  // Criar gráficos
+  criarGraficoDonut("graficoCredito", dadosCredito, coresTema[temaAtual].coresSetores);
+  criarGraficoDonut("graficoDebito", dadosDebito, coresTema[temaAtual].coresSetoresDebito);
 </script>
 {% endblock %}

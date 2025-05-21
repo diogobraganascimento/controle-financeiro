@@ -1,15 +1,16 @@
 :root {
-    --fundo-principal: #F5F7FA;
+    --fundo-principal: #ffffff;
     --fundo-card: #FFFFFF;
     --primaria: #4F9DDE;
     --secundaria: #6FCF97;
-    --texto-principal: #333333;
+    --texto-principal: #000000;
     --texto-secundario: #666666;
     --borda: #E0E0E0;
     --erro: #EB5757;
     --sucesso: #27AE60;
+    --text-color: #212529;
+    --card-bg: #f8f9fa;
 }
-
 
 body {
     background-color: var(--fundo-principal);
