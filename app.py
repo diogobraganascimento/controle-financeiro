@@ -11,7 +11,7 @@ from fpdf import FPDF
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.contrib.github import make_github_blueprint, github
-from utils import executar_consulta, get_usuario_id, criar_senha_hash, allowed_file
+from utils import executar_consulta, get_usuario_id, criar_senha_hash, allowed_file, validar_cpf, validar_data
 
 app = Flask(__name__)
 app.secret_key = 'Q1w2e3r4t5'
@@ -191,8 +191,6 @@ def upload_avatar():
     return redirect(url_for('perfil'))
 
 
-
-
 # Rota de Desativação da Conta
 @app.route('/desativar_conta/<int:id>', methods=['POST'])
 def desativar_conta(id):
@@ -226,6 +224,14 @@ def cadastro():
         senha = request.form.get('password')
         confirmar_senha = request.form.get('confirm_password')
         termos = request.form.get('termos')
+
+        if not validar_cpf(cpf):
+            flash("CPF inválido.", "danger")
+            return redirect(url_for('cadastro'))
+
+        if not validar_data(nascimento):
+            flash("Data de nascimento inválida. Use o formato DD-MM-YYYY.", "danger")
+            return redirect(url_for('cadastro'))
 
         if not all([nome, sobrenome, email, senha, confirmar_senha]):
             flash("Por favor, preencha todos os campos obrigatórios.", "danger")
