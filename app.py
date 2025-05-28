@@ -389,6 +389,7 @@ def home():
     busca = request.args.get("busca", "").lower()
 
     query = "SELECT * FROM debitos WHERE usuario_id = ?"
+
     params = [usuario_id]
 
     if status_filtro:
@@ -401,6 +402,11 @@ def home():
         query += " AND status = 'Pago'"
 
     tabela_debitos = executar_consulta(query, params, fetchall=True)
+    tabela_creditos = executar_consulta(
+        "SELECT * FROM creditos WHERE usuario_id = ?",
+        (usuario_id,),
+        fetchall=True
+    )
 
     # Aplica filtro de busca por descrição (índice 2 = descrição)
     if busca:
@@ -441,6 +447,7 @@ def home():
                            total_creditos=total_creditos,
                            total_debitos=total_debitos,
                            tabela_debitos=tabela_debitos,
+                           tabela_creditos=tabela_creditos,
                            dados_debitos=dados_debitos,
                            dados_creditos=dados_creditos)
 

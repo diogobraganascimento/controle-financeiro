@@ -1,7 +1,9 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #007BFF;">
     <div class="container">
         <a class="navbar-brand text-white fw-bold" href="{{ url_for('home') }}">Controle Financeiro</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -49,19 +51,18 @@
                 </ul>
 
                 <div class="d-flex ms-auto align-items-center">
-                    <span class="text-white me-3">Olá, {{ session['usuario']['username'] }}</span>
-                    {% if session['usuario']['avatar'] %}
-                        <img src="{{ url_for('static', filename='avatars/' + session['usuario']['avatar']) }}"
-                             alt="Avatar" width="40" class="rounded-circle img-fluid me-2">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='avatars/default-avatar.png') }}"
-                             alt="Avatar" width="40" class="rounded-circle img-fluid me-2">
-                    {% endif %}
-                    <a class="btn btn-outline-light btn-sm w-100 mb-2m" href="{{ url_for('logout') }}">Sair</a>
+                    <span class="text-white me-3">
+                        Olá, {{ session['usuario']['username'] }}
+                    </span>
+
+                    <img src="{{ url_for('static', filename='avatars/' + (session['usuario']['avatar'] or 'default-avatar.png')) }}"
+                         alt="Avatar do usuário" width="40" class="rounded-circle img-fluid me-2">
+
+                    <a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">Sair</a>
                 </div>
             {% else %}
                 <div class="ms-auto">
-                    <a class="btn btn-outline-light btn-sm w-100 mb-2" href="{{ url_for('login') }}">Entrar</a>
+                    <a class="btn btn-outline-light btn-sm" href="{{ url_for('login') }}">Entrar</a>
                 </div>
             {% endif %}
         </div>

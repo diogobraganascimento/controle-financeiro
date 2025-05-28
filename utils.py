@@ -247,8 +247,8 @@ def autenticar_usuario(username: str, senha: str) -> dict | None:
         dict | None: Dicionário com dados do usuário ('id', 'username', 'is_admin')
                      se a autenticação for bem-sucedida, ou None caso contrário.
     """
-    query = "SELECT id, username, senha_hash, is_admin, FROM usuarios WHERE username = ?"
-    resultado = executar_consulta(query, (username), fetchone=True)
+    query = "SELECT id, username, senha_hash, is_admin FROM usuarios WHERE username = ?"
+    resultado = executar_consulta(query, (username,), fetchone=True)
     if resultado:
         id_usuario, username, senha_hash, is_admin = resultado
         if bcrypt.checkpw(senha.encode('utf-8'), senha_hash):

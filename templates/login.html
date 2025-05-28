@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - Controle Financeiro{% endblock %}
+{% block title %}Login - Controle Financeiro{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" id="contentLogin">
@@ -10,7 +10,10 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -25,13 +28,13 @@
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
             <div class="d-grid gap-2">
-                <button class="btn btn-primary" type="submit">Entrar</button>
+                <button type="submit" class="btn btn-primary">Entrar</button>
                 <a href="{{ url_for('cadastro') }}" class="btn btn-outline-secondary">Criar Conta</a>
                 <a href="{{ url_for('welcome') }}" class="btn btn-outline-danger">Voltar</a>
             </div>
-            <div class="text-center">
-                <p class="mb-2 fs-5">Entrar com</p>
 
+            <div class="text-center mt-4">
+                <p class="fs-5 mb-3">Entrar com</p>
                 <div class="d-flex justify-content-center gap-3">
                     <a href="{{ url_for('login_google') }}">
                         <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="40">

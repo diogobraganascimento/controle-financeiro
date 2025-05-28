@@ -3,230 +3,268 @@
 {% block title %}Home - Controle Financeiro{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">Bem-vindo ao Controle Financeiro</h1>
-    <p>Gerencie seus créditos e débitos de forma simples e eficiente.</p>
+<h1 class="mb-4">Bem-vindo ao Controle Financeiro</h1>
+<p>Gerencie seus créditos e débitos de forma simples e eficiente.</p>
 
-    <!-- Gráfico -->
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <!-- Gráfico de Créditos -->
-            <div class="col-md-4 d-flex flex-column align-items-center mb-4">
-                <h4>Créditos</h4>
-                <canvas id="graficoCredito" width="200" height="200"></canvas>
-                {% if not dados_creditos %}
-                    <div class="text-center text-muted mt-3">Sem dados disponíveis para créditos</div>
-                {% endif %}
-                <a href="/credito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
-            </div>
-
-            <!-- Gráfico de Débitos -->
-            <div class="col-md-4 d-flex flex-column align-items-center mb-4">
-                <h4>Débitos</h4>
-                <canvas id="graficoDebito" width="200" height="200"></canvas>
-                {% if not dados_debitos %}
-                    <div class="text-center text-muted mt-3">Sem dados disponíveis para débitos</div>
-                {% endif %}
-                <a href="/debito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
-            </div>
+<!-- Gráficos -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Gráfico de Créditos -->
+        <div class="col-md-4 d-flex flex-column align-items-center mb-4">
+            <h4>Créditos</h4>
+            <canvas id="graficoCredito" width="200" height="200"></canvas>
+            {% if not dados_creditos %}
+            <div class="text-center text-muted mt-3">Sem dados disponíveis para créditos</div>
+            {% endif %}
+            <a href="/credito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
         </div>
 
-        <!-- Resumo do Mês -->
-        <div class="container mt-12 d-flex flex-column align-items-center">
-            <h4 class="text-center mb-6">Resumo do Mês</h4>
-            <canvas id="graficoComparativo" height="25"></canvas>
+        <!-- Gráfico de Débitos -->
+        <div class="col-md-4 d-flex flex-column align-items-center mb-4">
+            <h4>Débitos</h4>
+            <canvas id="graficoDebito" width="200" height="200"></canvas>
+            {% if not dados_debitos %}
+            <div class="text-center text-muted mt-3">Sem dados disponíveis para débitos</div>
+            {% endif %}
+            <a href="/debito" class="btn btn-outline-primary btn-sm mt-2">Ver detalhes</a>
         </div>
     </div>
 
+    <!-- Resumo do Mês -->
+    <div class="container mt-5 d-flex flex-column align-items-center">
+        <h4 class="text-center mb-4">Resumo do Mês</h4>
+        <canvas id="graficoComparativo" height="25"></canvas>
+    </div>
+</div>
 
-    <!-- Tabela -->
-    <div class="container mt-5">
-        <h3 class="text-center mb-4">Lista de Débitos</h3>
+<!-- Tabela -->
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Lista de Débitos e Créditos</h3>
 
-        <div class="row mb-4">
-            <!-- Filtros de busca -->
-            <div class="col-lg-9">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-body pt-5">
-                        <form method="get" action="{{ url_for('home') }}" class="row gy-2 gx-3 align-items-center">
-                            <!-- Campo de busca -->
-                            <div class="col-md-5">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                                    <input type="text" name="busca" id="busca" class="form-control"
-                                           placeholder="Buscar descrição..." value="{{ request.args.get('busca', '') }}">
-                                </div>
+    <div class="row mb-4">
+        <!-- Filtros de busca -->
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body pt-4">
+                    <form method="get" action="{{ url_for('home') }}" class="row gy-2 gx-3 align-items-center">
+                        <!-- Campo de busca -->
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                <input type="text" name="busca" id="busca" class="form-control" placeholder="Buscar descrição..." value="{{ request.args.get('busca', '') }}">
                             </div>
-
-                            <!-- Filtro de status -->
-                            <div class="col-md-4">
-                                <select name="status" class="form-select">
-                                    <option value="">Todos os Status</option>
-                                    <option value="Pendente" {% if request.args.get('status') == 'Pendente' %}selected{% endif %}>Pendente</option>
-                                    <option value="Pago" {% if request.args.get('status') == 'Pago' %}selected{% endif %}>Pago</option>
-                                    <option value="Agendado" {% if request.args.get('status') == 'Agendado' %}selected{% endif %}>Agendado</option>
-                                </select>
-                            </div>
-
-                            <!-- Botões -->
-                            <div class="col-md-3 d-flex gap-2">
-                                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                                {% if request.args.get('status') or request.args.get('busca') %}
-                                    <a href="{{ url_for('home') }}" class="btn btn-outline-secondary w-100">Limpar</a>
-                                {% endif %}
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Exportação -->
-            <div class="col-lg-3 d-flex">
-                <div class="card shadow-sm border-0 w-100 h-100">
-                    <div class="card-body d-flex flex-column align-items-center gap-2">
-                        <span class="text-muted small">Exportar como:</span>
-                        <div class="btn-group w-100">
-                            <a href="{{ url_for('exportar_dados', formato='xls') }}" class="btn btn-outline-success">
-                                <i class="bi bi-file-earmark-excel"></i>
-                            </a>
-                            <a href="{{ url_for('exportar_dados', formato='json') }}" class="btn btn-outline-primary">
-                                <i class="bi bi-code-slash"></i>
-                            </a>
-                            <a href="{{ url_for('exportar_dados', formato='pdf') }}" class="btn btn-outline-danger">
-                                <i class="bi bi-file-earmark-pdf"></i>
-                            </a>
                         </div>
-                    </div>
+
+                        <!-- Filtro de status -->
+                        <div class="col-md-4">
+                            <select name="status" class="form-select">
+                                <option value="">Todos os Status</option>
+                                <option value="Pendente" {% if request.args.get('status') == 'Pendente' %}selected{% endif %}>Pendente</option>
+                                <option value="Pago" {% if request.args.get('status') == 'Pago' %}selected{% endif %}>Pago</option>
+                                <option value="Agendado" {% if request.args.get('status') == 'Agendado' %}selected{% endif %}>Agendado</option>
+                            </select>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                            {% if request.args.get('status') or request.args.get('busca') %}
+                            <a href="{{ url_for('home') }}" class="btn btn-outline-secondary w-100">Limpar</a>
+                            {% endif %}
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
 
-        <!-- Tabela de Débitos -->
-        <table class="table table-striped table-bordered text-center align-middle">
-            <thead class="table-secondary">
-                <tr>
-                    <th>ID</th>
-                    <th>Valor</th>
-                    <th>Descrição</th>
-                    <th>Tipo</th>
-                    <th>Categoria</th>
-                    <th>Data</th>
-                    <th>Status</th>
-                    <th>Data Agendada</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for debito in tabela_debitos %}
-                <tr>
-                    <td>{{ debito[0] }}</td>
-                    <td>R$ {{ "%.2f"|format(debito[1]) }}</td>
-                    <td>{{ debito[2] }}</td>
-                    <td>{{ debito[3] }}</td>
-                    <td>{{ debito[4] }}</td>
-                    <td>{{ debito[5] }}</td>
-                    <td>{{ debito[6] }}</td>
-                    <td>
-                        {% if debito[6] == 'Agendado' %}
-                            {{ debito[7] }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Exportação -->
+        <div class="col-lg-3 d-flex">
+            <div class="card shadow-sm border-0 w-100 h-100">
+                <div class="card-body d-flex flex-column align-items-center gap-2">
+                    <span class="text-muted small">Exportar como:</span>
+                    <div class="btn-group w-100">
+                        <a href="{{ url_for('exportar_dados', formato='xls') }}" class="btn btn-outline-success">
+                            <i class="bi bi-file-earmark-excel"></i>
+                        </a>
+                        <a href="{{ url_for('exportar_dados', formato='json') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-code-slash"></i>
+                        </a>
+                        <a href="{{ url_for('exportar_dados', formato='pdf') }}" class="btn btn-outline-danger">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="tabelaTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-debitos" data-bs-toggle="tab" data-bs-target="#tab-debitos-pane" type="button" role="tab" aria-controls="tab-debitos-pane" aria-selected="true">
+                Tabela de Débitos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-creditos" data-bs-toggle="tab" data-bs-target="#tab-creditos-pane" type="button" role="tab" aria-controls="tab-creditos-pane" aria-selected="false">
+                Tabela de Créditos
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="tabelaConteudo">
+        <!-- Débitos -->
+        <div class="tab-pane fade show active" id="tab-debitos-pane" role="tabpanel" aria-labelledby="tab-debitos">
+            <table class="table table-striped table-hover mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Data Agendada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if tabela_debitos %}
+                        {% for debito in tabela_debitos %}
+                        <tr>
+                            <td>{{ debito[0] }}</td>
+                            <td>R$ {{ "%.2f"|format(debito[1]) }}</td>
+                            <td>{{ debito[2] }}</td>
+                            <td>{{ debito[3] }}</td>
+                            <td>{{ debito[4] }}</td>
+                            <td>{{ debito[5] }}</td>
+                            <td>{{ debito[6] }}</td>
+                            <td>
+                                {% if debito[6] == 'Agendado' %}
+                                    {{ debito[7] }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">Nenhum débito cadastrado.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Créditos -->
+        <div class="tab-pane fade" id="tab-creditos-pane" role="tabpanel" aria-labelledby="tab-creditos">
+            <table class="table table-striped table-hover mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if tabela_creditos %}
+                        {% for credito in tabela_creditos %}
+                        <tr>
+                            <td>{{ credito[0] }}</td>
+                            <td>R$ {{ "%.2f"|format(credito[1]) }}</td>
+                            <td>{{ credito[2] }}</td>
+                            <td>{{ credito[3] }}</td>
+                            <td>{{ credito[4] }}</td>
+                            <td>{{ credito[5] }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">Nenhum crédito cadastrado.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
-<!-- Bloco do Script -->
 {% block scripts %}
 <script>
-const dadosCredito = {{ dados_creditos|tojson }};
-  const dadosDebito = {{ dados_debitos|tojson }};
-  const temaAtual = localStorage.getItem("tema") || "claro";
+const dadosCredito = {{ dados_creditos | tojson }};
+const dadosDebito = {{ dados_debitos | tojson }};
+const temaAtual = localStorage.getItem("tema") || "claro";
 
-  const coresTema = {
+const coresTema = {
     claro: {
-      fundo: "#fff",
-      corFonte: "#000",
-      coresSetores: ["#4caf50", "#81c784", "#c8e6c9"],
-      coresSetoresDebito: ["#f44336", "#e57373", "#ffcdd2"]
+        fundo: "#fff",
+        corFonte: "#000",
+        coresSetores: ["#4caf50", "#81c784", "#c8e6c9"],
+        coresSetoresDebito: ["#f44336", "#e57373", "#ffcdd2"]
     },
     escuro: {
-      fundo: "#121212",
-      corFonte: "#fff",
-      coresSetores: ["#66bb6a", "#388e3c", "#1b5e20"],
-      coresSetoresDebito: ["#ef5350", "#c62828", "#b71c1c"]
+        fundo: "#121212",
+        corFonte: "#fff",
+        coresSetores: ["#66bb6a", "#388e3c", "#1b5e20"],
+        coresSetoresDebito: ["#ef5350", "#c62828", "#b71c1c"]
     }
-  };
+};
 
-  function criarGraficoDonut(id, dados, cores) {
+function criarGraficoDonut(id, dados, cores) {
     const tema = coresTema[temaAtual];
     const temDados = dados && dados.labels && dados.labels.length > 0;
 
     const config = {
-      type: "doughnut",
-      data: temDados ? {
-        labels: dados.labels,
-        datasets: [{
-          data: dados.valores,
-          backgroundColor: cores,
-          borderWidth: 1
-        }]
-      } : {
-        labels: ["Sem dados"],
-        datasets: [{
-          data: [1],
-          backgroundColor: ["#ccc"],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        plugins: {
-          legend: {
-            labels: {
-              color: tema.corFonte
-            }
-          },
-          tooltip: {
-            enabled: temDados
-          }
+        type: "doughnut",
+        data: temDados ? {
+            labels: dados.labels,
+            datasets: [{
+                data: dados.valores,
+                backgroundColor: cores,
+                borderWidth: 1
+            }]
+        } : {
+            labels: ["Sem dados"],
+            datasets: [{
+                data: [1],
+                backgroundColor: ["#ccc"],
+                borderWidth: 0
+            }]
         },
-        cutout: "70%",
-        responsive: true,
-        maintainAspectRatio: false
-      },
-      plugins: [{
-        id: 'textoCentral',
-        beforeDraw(chart) {
-          if (!temDados) return;
+        options: {
+            plugins: {
+                legend: { labels: { color: tema.corFonte } },
+                tooltip: { enabled: temDados }
+            },
+            cutout: "70%",
+            responsive: true,
+            maintainAspectRatio: false
+        },
+        plugins: [{
+            id: 'textoCentral',
+            beforeDraw(chart) {
+                const { ctx, width } = chart;
+                const total = dados.valores.length > 0 ? dados.valores.reduce((a, b) => a + b, 0) : 0;
+                ctx.save();
+                ctx.font = "bold 16px Arial";
+                ctx.fillStyle = tema.corFonte;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(`R$ ${total.toFixed(2)}`, width / 2, width / 2);
+                ctx.restore();
+            }
+        }]
 
-          const { width } = chart;
-          const { ctx } = chart;
-          const total = dados.valores.reduce((a, b) => a + b, 0);
-
-          ctx.save();
-          ctx.font = "bold 16px Arial";
-          ctx.fillStyle = tema.corFonte;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(`R$ ${total.toFixed(2)}`, width / 2, chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2);
-          ctx.restore();
-        }
-      }]
     };
+    new Chart(document.getElementById(id), config);
+}
 
-    const canvas = document.getElementById(id);
-    if (canvas) {
-      new Chart(canvas, config);
-    }
-  }
-
-  // Criar gráficos
-  criarGraficoDonut("graficoCredito", dadosCredito, coresTema[temaAtual].coresSetores);
-  criarGraficoDonut("graficoDebito", dadosDebito, coresTema[temaAtual].coresSetoresDebito);
+criarGraficoDonut("graficoCredito", dadosCredito, coresTema[temaAtual].coresSetores);
+criarGraficoDonut("graficoDebito", dadosDebito, coresTema[temaAtual].coresSetoresDebito);
 </script>
 {% endblock %}
-
-
