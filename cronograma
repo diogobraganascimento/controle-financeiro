@@ -2,10 +2,6 @@
     * Melhorar responsividade para celulares (testar com bootstrap ou media queries).
 
 ✅ 2. Segurança
-    * Hash de senhas com werkzeug.security ou bcrypt.
-    * Validação de dados no backend (ex: CPF válido, data real).
-    * Proteção contra:
-    * SQL Injection (você já usa parâmetros — continue assim),
     * CSRF (usar Flask-WTF para formulários).
     * Criar logs de auditoria (quem fez o quê, quando — em alterações críticas).
 

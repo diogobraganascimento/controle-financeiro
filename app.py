@@ -7,9 +7,16 @@ from werkzeug.utils import secure_filename
 from flask import request, session, redirect, url_for, flash
 from werkzeug.security import generate_password_hash
 
+# Retirar aqui
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TelField, DateField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
+
 import pandas as pd
 from fpdf import FPDF
-from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_wtf import CSRFProtect
+
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.contrib.github import make_github_blueprint, github
 from utils import (
@@ -31,6 +38,7 @@ from utils import (
 
 app = Flask(__name__)
 app.secret_key = 'Q1w2e3r4t5'
+csrf = CSRFProtect(app)
 
 google_bp = make_google_blueprint(
     client_id="511880856381-oj0hr6l9doa644ndlmsdls6u6jgdhk6k.apps.googleusercontent.com",
@@ -52,32 +60,36 @@ app.register_blueprint(github_bp, url_prefix="/login")  # GitHub
 criar_tabela_usuarios()
 
 
+class LoginForm(FlaskForm):
+    username = StringField('Usuário', validators=[DataRequired()])
+    password = PasswordField('Senha', validators=[DataRequired()])
+    submit = SubmitField('Entrar')
+
+
 # Rota de Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """
-    Rota para exibir e processar o formulário de login do usuário.
+    Rota para autenticação de usuários.
+
+    Exibe o formulário de login e processa os dados enviados.
+    Se as credenciais forem válidas, redireciona para a área restrita.
     """
-    if request.method == 'POST':
-        usuario = request.form['username']
-        senha = request.form['password']
+    form = LoginForm()
 
-        usuario_logado = autenticar_usuario(usuario, senha)
-        if usuario_logado:
-            session['usuario'] = {
-                'id': usuario_logado['id'],
-                'username': usuario_logado['username']
-            }
-            session['is_admin'] = usuario_logado['is_admin']
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
 
-            if session['is_admin']:
-                return redirect(url_for('admin_dashboard'))
-            else:
-                return redirect(url_for('home'))
+        # Aqui você coloca sua lógica de autenticação.
+        # Exemplo:
+        if autenticar_usuario(username, password):
+            flash('Login realizado com sucesso!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Usuário ou senha incorretos.', 'danger')
 
-        flash("Usuário ou senha inválidos", "danger")
-
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 
 # Rota de Logon/google
