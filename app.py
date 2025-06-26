@@ -37,19 +37,19 @@ from utils import (
 )
 
 app = Flask(__name__)
-app.secret_key = 'Q1w2e3r4t5'
+app.secret_key = *SENHA_CRIADA*
 csrf = CSRFProtect(app)
 
 google_bp = make_google_blueprint(
-    client_id="511880856381-oj0hr6l9doa644ndlmsdls6u6jgdhk6k.apps.googleusercontent.com",
-    client_secret="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",
+    client_id=*SEU_CLIENTE_ID*
+    client_secret=*SEU_CLIENT_SECRET*
     scope=["profile", "email"],
     redirect_url="/login/google/authorized"
 )
 
 github_bp = make_github_blueprint(
-    client_id="Ov23liowgLsKjMG17f8g",
-    client_secret="f1d6f82f65a12bcb80f22407faed255e2e425a2a",
+    client_id=*SEU_CLIENTE_ID*
+    client_secret=*SEU_CLIENT_SECRET*
     redirect_url="http://localhost:5000/login/github/authorized",
 )
 
