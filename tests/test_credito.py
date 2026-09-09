@@ -364,4 +364,10 @@ def test_credito_deve_ser_uma_transacao(credito):
     """
 
     assert isinstance(credito, Transacao)
-    
+
+def test_credito_deve_ter_impacto_positivo_no_saldo(credito):
+    """
+    Verifica se um crédito aumenta o saldo.
+    """
+
+    assert credito.impacto_saldo() == Decimal("5000.00")

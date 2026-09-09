@@ -29,3 +29,10 @@ class Credito(Transacao):
             categoria = categoria,
             comprovante = comprovante,
         )
+
+    def impacto_saldo(self) -> Decimal:
+        """
+        Retorna o impacto positivo do crédito no saldo.
+        """
+
+        return self.valor

@@ -28,3 +28,10 @@ class Debito(Transacao):
             categoria=categoria,
             comprovante=comprovante,
         )
+
+    def impacto_saldo(self) -> Decimal:
+        """
+        Retorna o impacto negativo do débito no saldo.
+        """
+
+        return -self.valor

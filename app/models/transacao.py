@@ -142,3 +142,14 @@ class Transacao:
             raise ValueError(
                 "A categoria da transação é obrigatória."
             )
+
+    def impacto_saldo(self) -> Decimal:
+        """
+        Retorna o impacto da transação no saldo.
+        
+        Este método deve ser implementado pelas subclasses.
+        """
+
+        raise NotImplementedError(
+            "As subclasses devem implementar impacto_saldo()."
+        )
