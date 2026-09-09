@@ -7,8 +7,8 @@ from decimal import Decimal
 
 import pytest
 
-from app.models.credito import Credito
-from app.models.transacao import Transacao
+from app.domain.credito import Credito
+from app.domain.transacao import Transacao
 
 
 @pytest.fixture

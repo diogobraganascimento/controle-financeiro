@@ -5,8 +5,8 @@ Teste do comportamento comum de transações.
 from datetime import date
 from decimal import Decimal
 
-from app.models.credito import Credito
-from app.models.debito import Debito
+from app.domain.credito import Credito
+from app.domain.debito import Debito
 
 
 def test_lista_de_transacoes_deve_calcular_saldo():

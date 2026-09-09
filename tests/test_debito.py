@@ -5,8 +5,8 @@ Testes do modelo de Débito.
 from datetime import date
 from decimal import Decimal
 
-from app.models.debito import Debito
-from app.models.transacao import Transacao
+from app.domain.debito import Debito
+from app.domain.transacao import Transacao
 
 
 def test_debito_deve_ser_uma_transacao():

@@ -1,11 +1,11 @@
 """
-Modelo de Débito.
+Entidade de domínio para débitos.
 """
 
 from datetime import date
 from decimal import Decimal
 
-from app.models.transacao import Transacao
+from app.domain.transacao import Transacao
 
 
 class Debito(Transacao):

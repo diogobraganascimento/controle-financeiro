@@ -1,17 +1,16 @@
 """
-Modelo de Crédito.
+Entidade de domínio para créditos.
 """
-
 
 from datetime import date
 from decimal import Decimal
 
-from app.models.transacao import Transacao
+from app.domain.transacao import Transacao
 
 
 class Credito(Transacao):
     """
-    Representa uma entrada financeira no sistema.
+    Representa uma entrada financeira.
     """
 
     def __init__(
@@ -20,14 +19,14 @@ class Credito(Transacao):
         valor: Decimal,
         data: date,
         categoria: str,
-        comprovante: str | None = None
+        comprovante: str | None = None,
     ):
         super().__init__(
-            descricao = descricao,
-            valor = valor,
-            data = data,
-            categoria = categoria,
-            comprovante = comprovante,
+            descricao=descricao,
+            valor=valor,
+            data=data,
+            categoria=categoria,
+            comprovante=comprovante,
         )
 
     def impacto_saldo(self) -> Decimal:
@@ -36,3 +35,4 @@ class Credito(Transacao):
         """
 
         return self.valor
+    

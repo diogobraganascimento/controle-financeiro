@@ -3,11 +3,13 @@ Ponto de entrada da aplicação Controle Financeiro.
 """
 
 from app import create_app
-from app.config import Config
+from app.extensions import db
 
 
 app = create_app()
-app.config.from_object(Config)
+
+with app.app_context():
+    db.create_all()
 
 
 if __name__ == "__main__":
