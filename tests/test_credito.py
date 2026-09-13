@@ -371,3 +371,10 @@ def test_credito_deve_ter_impacto_positivo_no_saldo(credito):
     """
 
     assert credito.impacto_saldo() == Decimal("5000.00")
+
+def test_credito_deve_ser_tipo_credito(credito):
+    """
+    Verifica se o tipo do crédito é identificado corretamente.
+    """
+
+    assert credito.tipo == "credito"

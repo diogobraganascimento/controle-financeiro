@@ -2,6 +2,8 @@
 Testes do modelo de Débito.
 """
 
+import pytest
+
 from datetime import date
 from decimal import Decimal
 
@@ -23,16 +25,30 @@ def test_debito_deve_ser_uma_transacao():
 
     assert isinstance(debito, Transacao)
 
-    def test_debito_deve_ter_impacto_negativo_no_saldo():
-        """
-        Verifica se um débito reduz o saldo.
-        """
+def test_debito_deve_ter_impacto_negativo_no_saldo():
+    """
+    Verifica se um débito reduz o saldo.
+    """
 
-        debito = Debito(
-            descricao="Aluguel",
-            valor=Decimal("1800.00"),
-            data=date(2026, 9, 10),
-            categoria="Moradia",
-        )
+    debito = Debito(
+        descricao="Aluguel",
+        valor=Decimal("1800.00"),
+        data=date(2026, 9, 10),
+        categoria="Moradia",
+    )
 
-        assert debito.impacto_saldo() == Decimal("-1800.00")
+    assert debito.impacto_saldo() == Decimal("-1800.00")
+
+def test_debito_deve_ser_do_tipo_debito():
+    """
+    Verifica se o tipo do débito é identificado corretamente.
+    """
+
+    debito = Debito(
+        descricao="Aluguel",
+        valor=Decimal("1800.00"),
+        data=date(2026, 9, 10),
+        categoria="Moradia",
+    )
+
+    assert debito.tipo == "debito"

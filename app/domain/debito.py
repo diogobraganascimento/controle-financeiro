@@ -35,3 +35,11 @@ class Debito(Transacao):
         """
 
         return -self.valor
+
+    @property
+    def tipo(self) -> str:
+        """
+        Retorna o tipo da transação.
+        """
+
+        return "debito"

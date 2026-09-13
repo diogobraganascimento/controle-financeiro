@@ -9,9 +9,12 @@ from app.extensions import db
 from app.routes.home import home_bp
 
 
-def create_app():
+def create_app(test_config=None):
     """
     Cria e configura uma instancia da aplicação Flask.
+
+    Args:
+        test_config: Configurações opcionais para testes.
 
     returns:
         Flask: aplicação Flask configurada.
@@ -20,6 +23,9 @@ def create_app():
     app = Flask(__name__)
 
     app.config.from_object(Config)
+
+    if test_config is not None:
+        app.config.from_mapping(test_config)
 
     db.init_app(app)
 
