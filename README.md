@@ -10,6 +10,7 @@ A aplicação terá como objetivo permitir o gerenciamento e acompanhamento da v
 
 - Créditos;
 - Débitos;
+- Categorias;
 - Empréstimos;
 - Parcelas;
 - Dashboard financeiro;
@@ -19,8 +20,8 @@ A aplicação terá como objetivo permitir o gerenciamento e acompanhamento da v
 
 - Python 3.14
 - Flask
+- Flask-SQLAlchemy
 - pytest
-- SQLAlchemy
 - SQLite
 - HTML
 - CSS
@@ -30,110 +31,160 @@ A aplicação terá como objetivo permitir o gerenciamento e acompanhamento da v
 
 ## Estrutura Atual
 
+```text
 controle-financeiro/
-|-- app/
-|   |-- __init__.py
-|   |-- config.py
-|   |-- models/
-|   |   |-- __init__.py
-|   |   |-- credito.py
-|   |   |-- debito.py
-|   |   |__ transacao.py
-|   |-- routes/
-|   |   |-- __init__.py
-|   |   |__ home.py
-|   |-- templates/
-|   |   |__ home.py
-|-- tests/
-|   |-- __init__.py
-|   |-- test_credito.py
-|   |__ test_debito.py
-|-- .gitignore
-|-- README.md
-|-- requirements.txt
-|-- run.py
+├── app/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── extensions.py
+│   ├── domain/
+│   │   ├── __init__.py
+│   │   ├── transacao.py
+│   │   ├── credito.py
+│   │   ├── debito.py
+│   │   └── categoria.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── transacao.py
+│   │   └── categoria.py
+│   ├── mappers/
+│   │   ├── __init__.py
+│   │   ├── transacao_mapper.py
+│   │   └── categoria_mapper.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   └── home.py
+│   └── templates/
+│       └── home.html
+├── tests/
+│   ├── __init__.py
+│   ├── test_config.py
+│   ├── test_transacao.py
+│   ├── test_credito.py
+│   ├── test_debito.py
+│   ├── test_categoria.py
+│   ├── test_mapper.py
+│   ├── test_categoria_mapper.py
+│   └── test_persistencia.py
+├── .gitignore
+├── README.md
+├── requirements.txt
+└── run.py
+```
 
-## Modelo de domínio
+## Arquitetura: domínio e persistência separados
 
-O projeto utiliza >Transacao< como classe base para representar os comportamentos e regras comuns às movimentações financeiras.
+O projeto segue o padrão **Data Mapper**: cada conceito de negócio (`Transacao`, `Credito`, `Debito`, `Categoria`) existe em duas formas independentes:
 
-A hierarquia atual é:
+- **`app/domain/`** — entidades de domínio, em Python puro, sem nenhuma dependência do banco de dados. Concentram as regras de negócio (validações, cálculos como `impacto_saldo()`). Podem ser testadas sem precisar de banco.
+- **`app/models/`** — modelos SQLAlchemy, responsáveis apenas por como os dados são armazenados (tabelas, colunas, constraints). Não conhecem regras de negócio.
+- **`app/mappers/`** — funções `to_model()` e `to_domain()` que convertem entre as duas representações.
 
-transação
-|-- Credito
-|-- Debito
+Essa separação evita que a lógica de negócio dependa do banco de dados, e mantém os testes de domínio rápidos e independentes de infraestrutura.
 
-## Crédito
+### Hierarquia de domínio
 
-Um crédito representa uma entrada financeira e possui:
+```text
+Transacao
+├── Credito
+└── Debito
+```
 
-* Descrição;
-* Valor;
-* Data;
-* Categoria;
-* Comprovante opcional.
+`Credito` e `Debito` herdam de `Transacao` e implementam `impacto_saldo()` de forma polimórfica (positivo para crédito, negativo para débito). Cada uma também expõe a propriedade `tipo` (`"credito"` ou `"debito"`), usada pelo mapper para reconstruir o objeto correto ao ler do banco.
 
-## Validações
+`Categoria` é uma entidade independente, com `nome` e `tipo` (`"credito"` ou `"debito"`), usada para classificar transações.
 
-Atualmente o domínio garante que:
+## Validações de domínio
 
-* A descrição seja obrigatória;
-* A categoria seja obrigatório;
-* O valor seja um <Decimal>;
-* O valor seja maior que zero;
-* A data seja um objeto <date>;
-* O comprovante seja um <str> ou <None>;
-* Espaços externos de descrição e categoria sejam removidos.
+### Transação (Crédito e Débito)
+
+- A descrição é obrigatória e não pode conter apenas espaços;
+- A categoria é obrigatória e não pode conter apenas espaços;
+- O valor deve ser um `Decimal` maior que zero;
+- A data deve ser um objeto `date`;
+- O comprovante é opcional, mas se informado deve ser uma `str`;
+- Espaços externos em descrição e categoria são removidos automaticamente.
+
+### Categoria
+
+- O nome é obrigatório e não pode conter apenas espaços;
+- O tipo deve ser `"credito"` ou `"debito"`;
+- Espaços externos no nome são removidos automaticamente.
+
+## Persistência
+
+A aplicação utiliza **SQLite** como banco de dados, acessado através do **SQLAlchemy** (na sintaxe declarativa tipada, com `Mapped` e `mapped_column`).
+
+Regras de integridade garantidas pelo próprio banco:
+
+- `transacoes.tipo` só aceita `"credito"` ou `"debito"` (`CheckConstraint`);
+- `categorias.tipo` só aceita `"credito"` ou `"debito"` (`CheckConstraint`);
+- não é permitido cadastrar duas categorias com o mesmo nome e o mesmo tipo (`UniqueConstraint`).
 
 ## Programação Orientada a Objetos
 
-O Projeto está sendo desenvolvido para aplicar conceitos de POO na prática, incluindo:
+O projeto está sendo desenvolvido para aplicar conceitos de POO na prática, incluindo:
 
-* Classes e objetos;
-* Atributos;
-* Métodos;
-* Encapsulamento;
-* @property;
-* Herança;
-* Abstração;
-* Polimorfismo.
+- Classes e objetos;
+- Atributos;
+- Métodos;
+- Encapsulamento;
+- `@property`;
+- Herança;
+- Abstração;
+- Polimorfismo.
 
 ## Testes
 
-Os testes automatizados são executados utilizando <pytest>.
+Os testes automatizados são executados utilizando `pytest`.
 
 Para executar a suíte:
 
+```bash
 pytest
+```
 
-Os testes verificam tanto a criação de objetos válidos quanto o tratamento de dados inválidos e as regras de negócio implementadas no domínio.
+Para executar com mais detalhes (nome de cada teste):
+
+```bash
+pytest -v
+```
+
+A suíte cobre:
+
+- Regras de negócio do domínio (`Transacao`, `Credito`, `Debito`, `Categoria`);
+- Conversão entre domínio e persistência (`mappers`);
+- Gravação e leitura no banco de dados, incluindo violações de integridade (`test_persistencia.py`);
+- Configuração da aplicação (`test_config.py`).
 
 ## Execução
 
 Com o ambiente virtual ativado:
 
+```bash
 python run.py
+```
 
 A aplicação Flask estará disponível em:
 
+```text
 http://127.0.0.1:5000
+```
 
 ## Status
 
 🚧 Em desenvolvimento.
 
-O projeto está sendo contruído incrementalmente, começando pela modelagem do domínio e pelas regras de negócio antes da imprementação da persistência em banco de dados.
+O domínio de Transação (Crédito/Débito) e Categoria já está modelado, testado e persistido em banco SQLite via SQLAlgo. O próximo passo é expor essas entidades através de rotas Flask (CRUD via HTTP).
 
-## Proxímos passos
+## Próximos passos
 
-* Refinar o modelo de domínio;
-* Definir categorias;
-* Implementar persistência com SQLAlchemy;
-* Criar banco SQLite;
-* Criar migrations;
-* Implementar o CRUD;
-* Desenvolver serviços e repositories;
-* Implementar interface web;
-* Criar dashboard financeiro;
-* Ampliar cobertura de teste;
-* Evoluir posteriormente para PostgreSQL.
+- Criar rotas Flask (CRUD) para Categoria;
+- Criar rotas Flask (CRUD) para Crédito e Débito;
+- Relacionar `Transacao.categoria` à tabela `Categoria` (chave estrangeira);
+- Desenvolver camada de serviços e/ou repositórios, quando justificável;
+- Implementar módulo de Empréstimos e Parcelas;
+- Criar dashboard financeiro;
+- Ampliar cobertura de testes de rotas (integração);
+- Implementar autenticação e segurança;
+- Evoluir posteriormente para PostgreSQL.
