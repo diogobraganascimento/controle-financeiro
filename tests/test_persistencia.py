@@ -13,6 +13,9 @@ from app.extensions import db
 from app.models.transacao import Transacao
 from app.domain.credito import Credito
 from app.mappers.transacao_mapper import to_model
+from app.domain.categoria import Categoria as CategoriaDomain
+from app.mappers.categoria_mapper import to_model as categoria_to_model
+from app.models.categoria import Categoria
 
 
 @pytest.fixture
@@ -134,3 +137,57 @@ def test_nao_deve_persistir_tipo_invalido(app):
         db.session.commit()
 
     db.session.rollback()
+
+def test_deve_persistir_categoria(app):
+    """
+    Verifica se uma categoria pode ser gravada no banco.
+    """
+
+    categoria = Categoria(nome="Salário", tipo="credito")
+
+    db.session.add(categoria)
+    db.session.commit()
+
+    assert categoria.id is not None
+
+def test_deve_persistir_categoria_do_dominio(app):
+    """
+    Verifica se uma Categoria de domínio pode ser convertida e persistida no banco.
+    """
+
+    categoria = CategoriaDomain(nome="Aluguel", tipo="debito")
+
+    modelo = categoria_to_model(categoria)
+
+    db.session.add(modelo)
+    db.session.commit()
+
+    assert modelo.id is not None
+
+def test_nao_deve_permitir_categoria_duplicada_no_mesmo_tipo(app):
+    """
+    Verifica se o banco rejeita duas categorias com o mesmo nome e o mesmo tipo.
+    """
+
+    db.session.add(Categoria(nome="Salário", tipo="credito"))
+    db.session.commit()
+
+    db.session.add(Categoria(nome="Salário", tipo="credito"))
+
+    with pytest.raises(IntegrityError):
+        db.session.commit()
+
+    db.session.rollback()
+
+def test_deve_permitir_mesmo_nome_em_tipos_diferentes(app):
+    """
+    Verifica se o mesmo nome de categoria pode existir em tipos diferentes (credito e debito).
+    """
+
+    db.session.add(Categoria(nome="Outros", tipo="credito"))
+    db.session.add(Categoria(nome="Outros", tipo="debito"))
+    db.session.commit()
+
+    categoria = db.session.query(Categoria).all()
+
+    assert len(categoria) == 2

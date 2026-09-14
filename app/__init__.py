@@ -30,6 +30,8 @@ def create_app(test_config=None):
     db.init_app(app)
 
     from app.models.transacao import Transacao
+    from app.models.categoria import Categoria
+    
 
     app.register_blueprint(home_bp)
 
