@@ -51,7 +51,7 @@ class Categoria:
 
         if not nome.strip():
             raise ValueError(
-                "O nome da categoria é obrigatória."
+                "O nome da categoria é obrigatório."
             )
 
     def _validar_tipo(self, tipo: str):

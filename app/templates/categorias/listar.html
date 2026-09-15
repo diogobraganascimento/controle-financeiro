@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Categorias - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Categorias</h1>
+
+    <p><a href="{{ url_for('categoria.nova') }}">Cadastrar nova categoria</a></p>
+
+    {% if categorias %}
+        <ul>
+            {% for categoria in categorias %}
+                <li>{{ categoria.nome }} ({{ categoria.tipo }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhuma categoria cadastrada ainda.</p>
+    {% endif %}
+
+</body>
+</html>

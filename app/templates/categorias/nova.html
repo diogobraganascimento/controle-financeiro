@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Nova Categoria - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Nova Categoria</h1>
+
+    {% if erro %}
+        <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('categoria.nova') }}">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" value="{{ nome }}">
+        <br>
+
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" name="tipo">
+            <option value="credito" {% if tipo == "credito" %}selected{% endif %}>Crédito</option>
+            <option value="debito" {% if tipo == "debito" %}selected{% endif %}>Débito</option>
+        </select>
+        <br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <p><a href="{{ url_for('categoria.listar') }}">Voltar para a lista</a></p>
+
+</body>
+</html>
