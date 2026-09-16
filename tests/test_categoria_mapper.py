@@ -31,3 +31,15 @@ def test_deve_converter_modelo_de_categoria_para_dominio():
     assert isinstance(categoria, CategoriaDomain)
     assert categoria.nome == "Aluguel"
     assert categoria.tipo == "debito"
+
+def test_to_domain_deve_preservar_o_id():
+    """
+    Verifica se o id do modelo é propagado para a entidade de domínio ao converter.
+    """
+
+    modelo = CategoriaModel(nome="Salário", tipo="credito")
+    modelo.id = 42
+
+    categoria = to_domain(modelo)
+
+    assert categoria.id == 42

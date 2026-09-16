@@ -11,7 +11,11 @@ class Categoria:
 
     TIPOS_VALIDOS = ("credito", "debito")
 
-    def __init__(self, nome: str, tipo: str):
+    def __init__(self, nome: str, tipo: str, id: int | None = None):
+        # O id não passa por validação: é um detalhe de persistencia,
+        # preencido pelo mapper quando a categoria vem do banco.
+        # Uma categoria recém-criada em memória ainda não tem id.
+        self.id = id        
         self.nome = nome
         self.tipo = tipo
 

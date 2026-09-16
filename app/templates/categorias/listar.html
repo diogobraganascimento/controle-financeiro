@@ -9,12 +9,27 @@
 
     <h1>Categorias</h1>
 
+    {% if erro %}
+        <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+
     <p><a href="{{ url_for('categoria.nova') }}">Cadastrar nova categoria</a></p>
 
     {% if categorias %}
         <ul>
             {% for categoria in categorias %}
-                <li>{{ categoria.nome }} ({{ categoria.tipo }})</li>
+                <li>
+                    {{ categoria.nome }} ({{ categoria.tipo }})
+                    -
+                    <a href="{{ url_for('categoria.editar', categoria_id=categoria.id) }}">Editar</a>
+                    -
+                    <form
+                        method="POST"
+                        action="{{ url_for('categoria.excluir', categoria_id=categoria.id) }}"
+                        style="display: inline;">
+                        <button type="submit">Excluir</button>
+                    </form>
+                </li>
             {% endfor %}
         </ul>
     {% else %}

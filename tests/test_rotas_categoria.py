@@ -86,3 +86,70 @@ def test_nao_deve_cadastrar_categoria_duplicada(client):
 
     assert resposta.status_code == 200
     assert "Já existe" in resposta.get_data(as_text=True)
+
+def test_deve_exibir_fomulario_de_edicao_preenchido(client):
+    """
+    verifcia se o formulário de edição vem preenchido com os dados atuais da categoria.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Salário", "tipo": "credito"},
+    )
+
+    categoria_id = 1  # primeira categoria criada no banco em memória
+
+    resposta = client.get(f"/categorias/{categoria_id}/editar")
+
+    assert resposta.status_code == 200
+    assert "Salário" in resposta.get_data(as_text=True)
+
+def test_deve_atualizar_categoria_existente(client):
+    """
+    Verifica se a atualização de uma categoria é persistida e reflete na listagem.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Salário", "tipo": "credito"},
+    )
+
+    resposta = client.post(
+        "/categorias/1/editar",
+        data={"nome": "Renda Extra", "tipo": "credito"},
+    )
+
+    assert resposta.status_code == 302
+
+    resposta_listagem = client.get("/categorias/")
+
+    assert "Renda Extra" in resposta_listagem.get_data(as_text=True)
+    assert "Salário" not in resposta_listagem.get_data(as_text=True)
+
+def test_deve_excluir_categoria_existente(client):
+    """
+    Verifica se uma categoria excluida deixa de aparecer na listagem.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Salário", "tipo": "credito"},
+    )
+
+    resposta = client.post("/categorias/1/excluir")
+
+    assert resposta.status_code == 302
+
+    resposta_listagem = client.get("/categorias/")
+
+    assert "Salário" not in resposta_listagem.get_data(as_text=True)
+
+def test_editar_categoria_inexistente_nao_deve_quebrar(client):
+    """
+    Verifica se tentar editar um id inexistente não derruba a aplicação.
+    """
+
+    resposta = client.get("/categorias/999/editar")
+
+    assert resposta.status_code == 200
+    assert "não encontrada" in resposta.get_data(as_text=True)

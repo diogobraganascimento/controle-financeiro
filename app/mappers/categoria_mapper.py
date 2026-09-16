@@ -23,5 +23,6 @@ def to_domain(categoria: CategoriaModel) -> CategoriaDomain:
 
     return CategoriaDomain(
         nome=categoria.nome,
-        tipo=categoria.tipo
+        tipo=categoria.tipo,
+        id=categoria.id,
     )

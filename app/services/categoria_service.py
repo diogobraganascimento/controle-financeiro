@@ -17,6 +17,11 @@ class CategoriaJaExisteError(Exception):
     Levantada quando já existe uma categoria com o mesmo nome e o mesmo tipo.
     """
 
+class CategoriaNaoEncontradaError(Exception):
+    """
+    Levantada quand nenhuma categoria é encontrada com o id informado.
+    """
+
 def listar_categorias() -> list[CategoriaDomain]:
     """
     Retorna todas as categorias cadastradas, já convertidas para entidades de domínio.
@@ -29,6 +34,22 @@ def listar_categorias() -> list[CategoriaDomain]:
     )
 
     return [to_domain(modelo) for modelo in modelos]
+
+def obter_categoria(categoria_id: int) -> CategoriaDomain:
+    """
+    Busca uma categoria pelo id.
+    
+    Levanta CategoriaNaoEcontradaError se não existir nenhuma categoria com ese id.
+    """
+
+    modelo = db.session.get(CategoriaModel, categoria_id)
+
+    if modelo is None:
+        raise CategoriaNaoEncontradaError(
+            f"Categoria com id {categoria_id} não encontrada."
+        )
+
+    return to_domain(modelo)
 
 def criar_categoria(nome: str, tipo: str) -> CategoriaDomain:
     """
@@ -57,3 +78,55 @@ def criar_categoria(nome: str, tipo: str) -> CategoriaDomain:
 
     return to_domain(modelo)
 
+def atualizar_categoria(
+        categoria_id: int,
+        nome: str,
+        tipo: str,
+) -> CategoriaDomain:
+    """
+    Atualiza o nome e o tipo de uma categoria existente.
+    
+    Levanta CategoriaNaoEncontradaError se o id não existir, ValueError/TypeError se os novos dados forem inválidos, e CategoriaJaExistieError se a alteração colidir com outras categorias já cadastradas.
+    """
+
+    modelo = db.session.get(CategoriaModel, categoria_id)
+
+    if modelo is None:
+        raise CategoriaNaoEncontradaError(
+            f"Categoria com id {categoria_id} não encontrada."
+        )
+
+    # Reaproveita as validações de domínio antes de alterar o modelo.
+    categoria_validada = CategoriaDomain(nome=nome, tipo=tipo)
+
+    modelo.nome = categoria_validada.nome
+    modelo.tipo = categoria_validada.tipo
+
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+
+        raise CategoriaJaExisteError(
+            f"Já existe uma categoria '{categoria_validada.nome}' "
+            f"do tipo '{categoria_validada.tipo}'."
+        )
+
+    return to_domain(modelo)
+
+def excluir_categoria(categoria_id: int):
+    """
+    Remove uma categoria pelo id.
+    
+    Levanta CategoriaNaoEncontradaError se o id não existir.
+    """
+
+    modelo = db.session.get(CategoriaModel, categoria_id)
+
+    if modelo is None:
+        raise CategoriaNaoEncontradaError(
+            f"Categoria com id {categoria_id} não encontrada."
+        )
+
+    db.session.delete(modelo)
+    db.session.commit()
