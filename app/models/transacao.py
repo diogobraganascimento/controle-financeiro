@@ -5,10 +5,11 @@ Modelo base para transações financeiras.
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, Date, Numeric, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import CheckConstraint, Date, ForeignKey, Numeric, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.extensions import db
+from app.models.categoria import Categoria
 
 
 class Transacao(db.Model):
@@ -49,10 +50,14 @@ class Transacao(db.Model):
         nullable=False,
     )
 
-    categoria: Mapped[str] = mapped_column(
-        String(100),
-        nullable=False,
+    categoria_id: Mapped[int] = mapped_column(
+        ForeignKey("categorias.id"),
+        nullable=False
     )
+
+    # Permite acessar transacao.categoria e obter o objeto Categoria
+    # inteiro (nome, tipo), sem escrever a consulta manualmente.
+    categoria: Mapped["Categoria"] = relationship()
 
     comprovante: Mapped[str | None] = mapped_column(
         String(500),

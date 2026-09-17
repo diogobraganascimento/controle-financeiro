@@ -12,7 +12,10 @@ from app import create_app
 from app.extensions import db
 from app.models.transacao import Transacao
 from app.domain.credito import Credito
-from app.mappers.transacao_mapper import to_model
+from app.mappers.transacao_mapper import (
+    to_model,
+    CategoriaDaTransacaoNaoEncontradaError,
+)
 from app.domain.categoria import Categoria as CategoriaDomain
 from app.mappers.categoria_mapper import to_model as categoria_to_model
 from app.models.categoria import Categoria
@@ -41,15 +44,19 @@ def app():
 
 def test_deve_persistir_transacao(app):
     """
-    Verifica se uma transação pode ser grava no banco.
+    Verifica se uma transação pode ser gravada no banco.
     """
+
+    categoria = Categoria(nome="Salário", tipo="credito")
+    db.session.add(categoria)
+    db.session.commit()
 
     transacao = Transacao(
         tipo="credito",
         descricao="Salário",
         valor=Decimal("5000.00"),
         data=date(2026, 9, 5),
-        categoria="Salário",
+        categoria_id=categoria.id,
         comprovante=None,
     )
 
@@ -63,12 +70,16 @@ def test_deve_recuperar_transacao_persistida(app):
     Verifica se uma transação pode ser recuperada do banco.
     """
 
+    categoria = Categoria(nome="Salário", tipo="credito")
+    db.session.add(categoria)
+    db.session.commit()
+
     transacao = Transacao(
         tipo="credito",
         descricao="Salário",
         valor=Decimal("5000.00"),
         data=date(2026, 9, 5),
-        categoria="Salário",
+        categoria_id=categoria.id,
         comprovante=None,
     )
 
@@ -85,13 +96,18 @@ def test_deve_recuperar_transacao_persistida(app):
     assert transacao_salva.descricao == "Salário"
     assert transacao_salva.valor == Decimal("5000.00")
     assert transacao_salva.data == date(2026, 9, 5)
-    assert transacao_salva.categoria == "Salário"
+    assert transacao_salva.categoria.nome == "Salário"
     assert transacao_salva.comprovante is None
 
 def test_deve_persistir_credito_do_dominio(app):
     """
-    Verifica se um Crédito de domínio pode ser convertido e persistido no banco.
+    Verifica se um Crédito de domínio pode ser convertido e
+    persistido no banco.
     """
+
+    categoria = Categoria(nome="Salário", tipo="credito")
+    db.session.add(categoria)
+    db.session.commit()
 
     credito = Credito(
         descricao="Salário",
@@ -113,22 +129,42 @@ def test_deve_persistir_credito_do_dominio(app):
     )
 
     assert transacao_salva is not None
-
     assert transacao_salva.tipo == "credito"
     assert transacao_salva.descricao == "Salário"
     assert transacao_salva.valor == Decimal("5000.00")
+    assert transacao_salva.categoria.nome == "Salário"
+
+def test_nao_deve_converter_transacao_com_categoria_inexistente(app):
+    """
+    Verifica se o mapper rejeita converter uma transação cuja
+    categoria não está cadastrada.
+    """
+
+    credito = Credito(
+        descricao="Salário",
+        valor=Decimal("5000.00"),
+        data=date(2026, 9, 5),
+        categoria="Categoria Inexistente",
+    )
+
+    with pytest.raises(CategoriaDaTransacaoNaoEncontradaError):
+        to_model(credito)
 
 def test_nao_deve_persistir_tipo_invalido(app):
     """
     Verifica se o banco rejeita um tipo de transação inválida.
     """
 
+    categoria = Categoria(nome="Teste", tipo="credito")
+    db.session.add(categoria)
+    db.session.commit()
+
     transacao = Transacao(
         tipo="banana",
         descricao="Teste",
         valor=Decimal("1000.00"),
         data=date(2026, 9, 13),
-        categoria="Teste"
+        categoria_id=categoria.id,
     )
 
     db.session.add(transacao)
@@ -152,7 +188,8 @@ def test_deve_persistir_categoria(app):
 
 def test_deve_persistir_categoria_do_dominio(app):
     """
-    Verifica se uma Categoria de domínio pode ser convertida e persistida no banco.
+    Verifica se uma Categoria de domínio pode ser convertida
+    e persistida no banco.
     """
 
     categoria = CategoriaDomain(nome="Aluguel", tipo="debito")
@@ -166,7 +203,8 @@ def test_deve_persistir_categoria_do_dominio(app):
 
 def test_nao_deve_permitir_categoria_duplicada_no_mesmo_tipo(app):
     """
-    Verifica se o banco rejeita duas categorias com o mesmo nome e o mesmo tipo.
+    Verifica se o banco rejeita duas categorias com o mesmo
+    nome e o mesmo tipo.
     """
 
     db.session.add(Categoria(nome="Salário", tipo="credito"))
@@ -181,13 +219,14 @@ def test_nao_deve_permitir_categoria_duplicada_no_mesmo_tipo(app):
 
 def test_deve_permitir_mesmo_nome_em_tipos_diferentes(app):
     """
-    Verifica se o mesmo nome de categoria pode existir em tipos diferentes (credito e debito).
+    Verifica se o mesmo nome de categoria pode existir em
+    tipos diferentes (credito e debito).
     """
 
     db.session.add(Categoria(nome="Outros", tipo="credito"))
     db.session.add(Categoria(nome="Outros", tipo="debito"))
     db.session.commit()
 
-    categoria = db.session.query(Categoria).all()
+    categorias = db.session.query(Categoria).all()
 
-    assert len(categoria) == 2
+    assert len(categorias) == 2

@@ -9,45 +9,24 @@ import pytest
 
 from app.domain.credito import Credito
 from app.domain.debito import Debito
-from app.mappers.transacao_mapper import (
-    to_model,
-    to_domain
-    )
+from app.mappers.transacao_mapper import to_domain
+from app.models.categoria import Categoria as CategoriaModel
 from app.models.transacao import Transacao as TransacaoModel
 
 
-def test_deve_converter_credito_para_modelo_de_persistencia():
-    """
-    Verifica se um Crédito é convertido corretamente para o modelo SQLAlchemy.
-    """
-
-    credito = Credito(
-        descricao="Salário",
-        valor=Decimal("5000.00"),
-        data=date(2026, 9, 5),
-        categoria="Salário",
-    )
-
-    modelo = to_model(credito)
-
-    assert modelo.tipo == "credito"
-    assert modelo.descricao == "Salário"
-    assert modelo.valor == Decimal("5000.00")
-    assert modelo.data == date(2026, 9, 5)
-    assert modelo.categoria == "Salário"
-    assert modelo.comprovante is None
-
 def test_deve_converter_modelo_de_credito_para_dominio():
     """
-    Verifica se um modelo de persistencia de crédito é convertido para a entidade de domínio correta.
+    Verifica se um modelo de persistência de crédito é convertido para a entidade de domínio correta.
     """
+
+    categoria_model = CategoriaModel(nome="Salário", tipo="credito")
 
     modelo = TransacaoModel(
         tipo="credito",
         descricao="Salário",
         valor=Decimal("5000.00"),
         data=date(2026, 9, 5),
-        categoria="Salário",
+        categoria=categoria_model,
         comprovante=None,
     )
 
@@ -57,19 +36,21 @@ def test_deve_converter_modelo_de_credito_para_dominio():
     assert credito.tipo == "credito"
     assert credito.descricao == "Salário"
     assert credito.valor == Decimal("5000.00")
+    assert credito.categoria == "Salário"
 
-        
 def test_deve_converter_modelo_de_debito_para_domain():
     """
     Verifica se um modelo de persistência de débito é convertido para a entidade de domínio correta.
     """
+
+    categoria_model = CategoriaModel(nome="Moradia", tipo="debito")
 
     modelo = TransacaoModel(
         tipo="debito",
         descricao="Aluguel",
         valor=Decimal("1800.00"),
         data=date(2026, 9, 10),
-        categoria="Moradia",
+        categoria=categoria_model,
         comprovante=None,
     )
 
@@ -79,23 +60,26 @@ def test_deve_converter_modelo_de_debito_para_domain():
     assert debito.tipo == "debito"
     assert debito.descricao == "Aluguel"
     assert debito.valor == Decimal("1800.00")
+    assert debito.categoria == "Moradia"
 
 def test_nao_deve_converter_tipo_desconhecido():
     """
     Verifica se um tipo desconhecido gera ValueError.
     """
 
+    categoria_model = CategoriaModel(nome="Teste", tipo="credito")
+
     modelo = TransacaoModel(
         tipo="banana",
         descricao="Teste",
         valor=Decimal("100.00"),
         data=date(2026, 9, 13),
-        categoria="Teste",
-        comprovante=None,
+        categoria=categoria_model,
+        comprovante=None
     )
 
     with pytest.raises(
         ValueError,
-        match="Tipo de transação inválido: banana",
+        match="Tipo de transação inválido: banana"
     ):
         to_domain(modelo)
