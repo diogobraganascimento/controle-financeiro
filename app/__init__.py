@@ -8,6 +8,8 @@ from app.config import Config
 from app.extensions import db
 from app.routes.home import home_bp
 from app.routes.categoria import categoria_bp
+from app.routes.credito import credito_bp
+from app.routes.debito import debito_bp
 
 
 def create_app(test_config=None):
@@ -36,5 +38,7 @@ def create_app(test_config=None):
 
     app.register_blueprint(home_bp)
     app.register_blueprint(categoria_bp)
+    app.register_blueprint(credito_bp)
+    app.register_blueprint(debito_bp)
 
     return app

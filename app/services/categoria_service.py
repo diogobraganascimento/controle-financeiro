@@ -35,6 +35,22 @@ def listar_categorias() -> list[CategoriaDomain]:
 
     return [to_domain(modelo) for modelo in modelos]
 
+def listar_categorias_por_tipo(tipo: str) -> list[CategoriaDomain]:
+    """
+    Retorna as categorias cadastradas de um tipo específico (credito ou debito).
+    
+    Usada pelos formulários de Crédito/Débito, que só devem ogerecer categorias compatíveis com o tipo da transação.
+    """
+
+    modelos = (
+        db.session.query(CategoriaModel)
+        .filter_by(tipo=tipo)
+        .order_by(CategoriaModel.nome)
+        .all()
+    )
+
+    return [to_domain(modelo) for modelo in modelos]
+
 def obter_categoria(categoria_id: int) -> CategoriaDomain:
     """
     Busca uma categoria pelo id.

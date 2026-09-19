@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Créditos - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Créditos</h1>
+
+    <p><a href="{{ url_for('credito.nova') }}">Cadastrar novo crédito</a></p>
+
+    {% if transacoes %}
+        <ul>
+            {% for transacao in transacoes %}
+                <li>
+                    {{ transacao.data }} — {{ transacao.descricao }}
+                    — R$ {{ transacao.valor }} — {{ transacao.categoria }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum crédito cadastrado ainda.</p>
+    {% endif %}
+
+</body>
+</html>
