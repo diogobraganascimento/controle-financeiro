@@ -11,5 +11,22 @@
 
     <p>Bem-vindo ao seu sistema de controle financeiro.</p>
 
+    <h2>Resumo Financeiro</h2>
+
+    <ul>
+        <li>Saldo atual: R$ {{ resumo.saldo }}</li>
+        <li>Total de créditos: R$ {{ resumo.total_creditos }}</li>
+        <li>Total de débitos: R$ {{ resumo.total_debitos }}</li>
+        <li>Categorias cadastradas: {{ resumo.total_categorias }}</li>
+    </ul>
+
+    <h2>Navegação</h2>
+
+    <ul>
+        <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+        <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+        <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+    </ul>
+
 </body>
 </html>
