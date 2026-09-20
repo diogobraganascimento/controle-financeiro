@@ -97,7 +97,7 @@ def test_nao_deve_cadastrar_credito_com_valor_invalido(client):
     )
 
     assert resposta.status_code == 200
-    assert "valor inválido" in resposta.get_data(as_text=True)
+    assert "Valor inválido" in resposta.get_data(as_text=True)
 
 def test_nao_deve_cadastrar_credito_com_data_invalida(client):
     """
@@ -139,3 +139,103 @@ def test_nao_deve_cadastrar_credito_com_categoria_inexistente(client):
 
     assert resposta.status_code == 200
     assert "não está cadastrada" in resposta.get_data(as_text=True)
+
+def test_deve_exibir_formulario_de_edicao_preenchido(client):
+    """
+    Verifica se o formulário de edição de crédito vem
+    preenchido com os dados atuais.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Salário", "tipo": "credito"},
+    )
+    client.post(
+        "/creditos/novo",
+        data={
+            "descricao": "Salário",
+            "valor": "5000.00",
+            "data": "2026-09-05",
+            "categoria": "Salário",
+        },
+    )
+
+    resposta = client.get("/creditos/1/editar")
+
+    assert resposta.status_code == 200
+    assert "Salário" in resposta.get_data(as_text=True)
+
+def test_deve_atualizar_credito_existente(client):
+    """
+    Verifica se a atualização de um crédito é persistida
+    e reflete na listagem.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Salário", "tipo": "credito"},
+    )
+    client.post(
+        "/creditos/novo",
+        data={
+            "descricao": "Salário",
+            "valor": "5000.00",
+            "data": "2026-09-05",
+            "categoria": "Salário",
+        },
+    )
+
+    resposta = client.post(
+        "/creditos/1/editar",
+        data={
+            "descricao": "Décimo Terceiro",
+            "valor": "5000.00",
+            "data": "2026-12-20",
+            "categoria": "Salário",
+        },
+    )
+
+    assert resposta.status_code == 302
+
+    resposta_listagem = client.get("/creditos/")
+
+    assert "Décimo Terceiro" in resposta_listagem.get_data(as_text=True)
+
+def test_deve_excluir_credito_existente(client):
+    """
+    Verifica se um crédito excluído deixa de aparecer
+    na listagem.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Salário", "tipo": "credito"},
+    )
+    client.post(
+        "/creditos/novo",
+        data={
+            "descricao": "Salário",
+            "valor": "5000.00",
+            "data": "2026-09-05",
+            "categoria": "Salário",
+        },
+    )
+
+    resposta = client.post("/creditos/1/excluir")
+
+    assert resposta.status_code == 302
+
+    resposta_listagem = client.get("/creditos/")
+
+    assert "Salário" not in resposta_listagem.get_data(as_text=True)
+
+def test_editar_credito_inexistente_nao_deve_quebrar(client):
+    """
+    Verifica se tentar editar um id inexistente não derruba
+    a aplicação.
+    """
+
+    resposta = client.get("/creditos/999/editar")
+
+    assert resposta.status_code == 200
+    assert "não encontrada" in resposta.get_data(as_text=True)

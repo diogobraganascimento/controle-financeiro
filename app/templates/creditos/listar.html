@@ -9,6 +9,10 @@
 
     <h1>Créditos</h1>
 
+    {% if erro %}
+        <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+
     <p><a href="{{ url_for('credito.nova') }}">Cadastrar novo crédito</a></p>
 
     {% if transacoes %}
@@ -17,6 +21,16 @@
                 <li>
                     {{ transacao.data }} — {{ transacao.descricao }}
                     — R$ {{ transacao.valor }} — {{ transacao.categoria }}
+                    —
+                    <a href="{{ url_for('credito.editar', transacao_id=transacao.id) }}">Editar</a>
+                    —
+                    <form
+                        method="POST"
+                        action="{{ url_for('credito.excluir', transacao_id=transacao.id) }}"
+                        style="display: inline;"
+                    >
+                        <button type="submit">Excluir</button>
+                    </form>
                 </li>
             {% endfor %}
         </ul>

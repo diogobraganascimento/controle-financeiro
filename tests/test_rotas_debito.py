@@ -104,3 +104,67 @@ def test_creditos_e_debitos_devem_ficar_em_listas_separadas(client):
 
     assert "Aluguel" in resposta_debitos.get_data(as_text=True)
     assert "Salário" not in resposta_debitos.get_data(as_text=True)
+
+def test_deve_atualizar_debito_existente(client):
+    """
+    Verifica se a atualização de um débito é persistida
+    e reflete na listagem.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Moradia", "tipo": "debito"},
+    )
+    client.post(
+        "/debitos/novo",
+        data={
+            "descricao": "Aluguel",
+            "valor": "1800.00",
+            "data": "2026-09-10",
+            "categoria": "Moradia",
+        },
+    )
+
+    resposta = client.post(
+        "/debitos/1/editar",
+        data={
+            "descricao": "Aluguel Reajustado",
+            "valor": "1900.00",
+            "data": "2026-10-10",
+            "categoria": "Moradia",
+        },
+    )
+
+    assert resposta.status_code == 302
+
+    resposta_listagem = client.get("/debitos/")
+
+    assert "Aluguel Reajustado" in resposta_listagem.get_data(as_text=True)
+
+def test_deve_excluir_debito_existente(client):
+    """
+    Verifica se um débito excluído deixa de aparecer
+    na listagem.
+    """
+
+    client.post(
+        "/categorias/nova",
+        data={"nome": "Moradia", "tipo": "debito"},
+    )
+    client.post(
+        "/debitos/novo",
+        data={
+            "descricao": "Aluguel",
+            "valor": "1800.00",
+            "data": "2026-09-10",
+            "categoria": "Moradia",
+        },
+    )
+
+    resposta = client.post("/debitos/1/excluir")
+
+    assert resposta.status_code == 302
+
+    resposta_listagem = client.get("/debitos/")
+
+    assert "Aluguel" not in resposta_listagem.get_data(as_text=True)

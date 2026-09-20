@@ -18,7 +18,11 @@ class Transacao:
         data: date,
         categoria: str,
         comprovante: str | None = None,
+        id : int | None = None,
     ):
+        # O id não passa por validação: é um detalhe de persistência,
+        # preenchido pelo mapper quando a transação vem do banco.
+        self.id = id
         self.descricao = descricao
         self.valor = valor
         self.data = data

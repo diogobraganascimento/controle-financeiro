@@ -83,3 +83,25 @@ def test_nao_deve_converter_tipo_desconhecido():
         match="Tipo de transação inválido: banana"
     ):
         to_domain(modelo)
+
+def test_to_domain_deve_preservar_o_id():
+    """
+    Verifica se o id do modelo é propagado para a entidade
+    de domínio ao converter.
+    """
+
+    categoria_model = CategoriaModel(nome="Salário", tipo="credito")
+
+    modelo = TransacaoModel(
+        tipo="credito",
+        descricao="Salário",
+        valor=Decimal("5000.00"),
+        data=date(2026, 9, 5),
+        categoria=categoria_model,
+        comprovante=None,
+    )
+    modelo.id = 7
+
+    credito = to_domain(modelo)
+
+    assert credito.id == 7

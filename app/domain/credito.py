@@ -20,6 +20,7 @@ class Credito(Transacao):
         data: date,
         categoria: str,
         comprovante: str | None = None,
+        id: int | None = None,
     ):
         super().__init__(
             descricao=descricao,
@@ -27,6 +28,7 @@ class Credito(Transacao):
             data=data,
             categoria=categoria,
             comprovante=comprovante,
+            id=id,
         )
 
     def impacto_saldo(self) -> Decimal:
@@ -43,4 +45,3 @@ class Credito(Transacao):
         """
 
         return "credito"
-    

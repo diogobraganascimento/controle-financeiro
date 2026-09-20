@@ -55,6 +55,7 @@ def to_domain(transacao: TransacaoModel) -> TransacaoDomain:
             data=transacao.data,
             categoria=transacao.categoria.nome,
             comprovante=transacao.comprovante,
+            id=transacao.id,
         )
 
     if transacao.tipo == "debito":
@@ -64,6 +65,7 @@ def to_domain(transacao: TransacaoModel) -> TransacaoDomain:
             data=transacao.data,
             categoria=transacao.categoria.nome,
             comprovante=transacao.comprovante,
+            id=transacao.id,
         )
 
     raise ValueError(
