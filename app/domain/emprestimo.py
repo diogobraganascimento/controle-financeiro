@@ -39,15 +39,30 @@ class Emprestimo:
         taxa_juros_mensal: Decimal,
         quantidade_parcelas: int,
         data_contratacao: date,
+        parcelas: list[Parcela] | None = None,
+        valor_parcela: Decimal | None = None,
+        id: int | None = None,
     ):
+        # id, parcelas e valor_parcela são opcionais: quando não
+        # informados (criação de um empréstimo novo), são
+        # calculados/gerados automaticamente. Quando informados
+        # (reconstrução a partir do banco, via mapper), os valores
+        # recebidos são usados como estão - preservando o estado
+        # real das parcelas (quais já foram pagas).
+        self.id = id
         self.descricao = descricao
         self.valor_retirado = valor_retirado
         self.taxa_juros_mensal = taxa_juros_mensal
         self.quantidade_parcelas = quantidade_parcelas
         self.data_contratacao = data_contratacao
 
-        self.valor_parcela = self._calcular_valor_parcela()
-        self.parcelas = self._gerar_parcelas()
+        self.valor_parcela = (
+            valor_parcela
+            if valor_parcela is not None else self._calcular_valor_parcela()
+        )
+        self.parcelas = (
+            parcelas if parcelas is not None else self._gerar_parcelas()
+        )
 
     @property
     def descricao(self) -> str:

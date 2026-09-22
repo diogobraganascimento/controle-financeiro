@@ -34,6 +34,8 @@ def create_app(test_config=None):
 
     from app.models.transacao import Transacao
     from app.models.categoria import Categoria
+    from app.models.emprestimo import Emprestimo
+    from app.models.parcela import Parcela
     
 
     app.register_blueprint(home_bp)

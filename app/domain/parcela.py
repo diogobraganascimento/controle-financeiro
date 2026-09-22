@@ -9,7 +9,7 @@ class Parcela:
     """
     Representa uma parcela de um empréstimo.
     
-    Uma percela sempre nasce como não paga (paga=False); ela é marcada como paga através do método pagar().
+    Uma percela sempre nasce como não paga (paga=False); ela é marcada como paga através do método pagar(). O parâmetro `paga` existe para permitir recontruir uma parcela já existente a partir do banco de dados, preservando seu estado.
     """
 
     def __init__(
@@ -17,11 +17,15 @@ class Parcela:
         numero: int,
         valor: Decimal,
         data_vencimento: date,
+        paga: bool = False,
+        id: int | None = None,
     ):
+        # O id não passa por validação: é um detalhe de persistência.
+        self.id = id
         self.numero = numero
         self.valor = valor
         self.data_vencimento = data_vencimento
-        self.paga = False
+        self.paga = paga
 
     @property
     def numero(self) -> int:
@@ -32,6 +36,7 @@ class Parcela:
     @numero.setter
     def numero(self, numero: int):
         """Define o número da parcela."""
+        
         if not isinstance(numero, int):
             raise TypeError(
                 "O número da parcela deve ser um inteiro."

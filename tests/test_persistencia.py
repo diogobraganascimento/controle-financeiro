@@ -17,8 +17,11 @@ from app.mappers.transacao_mapper import (
     CategoriaDaTransacaoNaoEncontradaError,
 )
 from app.domain.categoria import Categoria as CategoriaDomain
+from app.domain.emprestimo import Emprestimo as EmprestimoDomain
 from app.mappers.categoria_mapper import to_model as categoria_to_model
+from app.mappers.emprestimo_mapper import to_model as emprestimo_to_model
 from app.models.categoria import Categoria
+from app.models.emprestimo import Emprestimo as EmprestimoModel
 
 
 @pytest.fixture
@@ -230,3 +233,61 @@ def test_deve_permitir_mesmo_nome_em_tipos_diferentes(app):
     categorias = db.session.query(Categoria).all()
 
     assert len(categorias) == 2
+
+def test_deve_persistir_emprestimo_com_suas_parcelas(app):
+    """
+    Verifica se um empréstimo e suas parcelas são persistidos juntos no banco.
+    """
+
+    emprestimo = EmprestimoDomain(
+        descricao="Empréstimo pessoal",
+        valor_retirado=Decimal("5000.00"),
+        taxa_juros_mensal=Decimal("0.02"),
+        quantidade_parcelas=3,
+        data_contratacao=date(2026, 9, 1),
+    )
+
+    modelo = emprestimo_to_model(emprestimo)
+
+    db.session.add(modelo)
+    db.session.commit()
+
+    assert modelo.id is not None
+
+    emprestimo_salvo = db.session.get(EmprestimoModel, modelo.id)
+
+    assert emprestimo_salvo is not None
+    assert len(emprestimo_salvo.parcelas) == 3
+
+def test_excluir_emprestimo_deve_excluir_suas_parcelas_em_cascata(app):
+    """
+    Verifica se excluir um empréstimo remove tamvém todas as suas parcelas (cascade delete-orphan).
+    """
+
+    from app.models.parcela import Parcela as ParcelaModel
+
+    emprestimo = EmprestimoDomain(
+        descricao="Empréstimo pessoal",
+        valor_retirado=Decimal("5000.00"),
+        taxa_juros_mensal=Decimal("0.02"),
+        quantidade_parcelas=3,
+        data_contratacao=date(2026, 9, 1)
+    )
+
+    modelo = emprestimo_to_model(emprestimo)
+
+    db.session.add(modelo)
+    db.session.commit()
+
+    emprestimo_id = modelo.id
+
+    db.session.delete(modelo)
+    db.session.commit()
+
+    parcelas_restantes = (
+        db.session.query(ParcelaModel)
+        .filter_by(emprestimo_id=emprestimo_id)
+        .count()
+    )
+
+    assert parcelas_restantes == 0

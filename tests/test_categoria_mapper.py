@@ -9,7 +9,7 @@ from app.models.categoria import Categoria as CategoriaModel
 
 def test_deve_converter_categoria_para_modelo_de_persistencia():
     """
-    VErifica se uma Categoria de domínio é convertida corretamente para o modelo SQLalchemy.
+    Verifica se uma Categoria de domínio é convertida corretamente para o modelo SQLalchemy.
     """
 
     categoria = CategoriaDomain(nome="Salário", tipo="credito")
