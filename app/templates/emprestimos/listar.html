@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Empréstimos - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Empréstimos</h1>
+
+    {% if erro %}
+        <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('emprestimo.novo') }}">Cadastrar novo empréstimo</a></p>
+
+    {% if emprestimos %}
+        <ul>
+            {% for emprestimo in emprestimos %}
+                <li>
+                    <a href="{{ url_for('emprestimo.detalhe', emprestimo_id=emprestimo.id) }}">
+                        {{ emprestimo.descricao }}
+                    </a>
+                    — R$ {{ emprestimo.valor_retirado }}
+                    — {{ emprestimo.parcelas_pagas }}/{{ emprestimo.quantidade_parcelas }} parcelas pagas
+                    — {{ emprestimo.situacao }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum empréstimo cadastrado ainda.</p>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Empréstimo - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Novo Empréstimo</h1>
+
+    {% if erro %}
+        <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('emprestimo.novo') }}">
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" value="{{ descricao }}">
+        <br>
+
+        <label for="valor_retirado">Valor retirado:</label>
+        <input type="number" step="0.01" min="0.01" id="valor_retirado" name="valor_retirado" value="{{ valor_retirado }}">
+        <br>
+
+        <label for="taxa_juros_mensal">Taxa de juros mensal (%):</label>
+        <input type="number" step="0.01" min="0.01" id="taxa_juros_mensal" name="taxa_juros_mensal" value="{{ taxa_juros_mensal }}">
+        <br>
+
+        <label for="quantidade_parcelas">Quantidade de parcelas:</label>
+        <input type="number" step="1" min="1" id="quantidade_parcelas" name="quantidade_parcelas" value="{{ quantidade_parcelas }}">
+        <br>
+
+        <label for="data_contratacao">Data de contratação:</label>
+        <input type="date" id="data_contratacao" name="data_contratacao" value="{{ data_contratacao }}">
+        <br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <p><a href="{{ url_for('emprestimo.listar') }}">Voltar para a lista</a></p>
+
+</body>
+</html>

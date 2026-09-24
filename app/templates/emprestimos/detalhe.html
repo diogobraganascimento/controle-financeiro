@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ emprestimo.descricao }} - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>{{ emprestimo.descricao }}</h1>
+
+    <ul>
+        <li>Valor retirado: R$ {{ emprestimo.valor_retirado }}</li>
+        <li>Valor da parcela: R$ {{ emprestimo.valor_parcela }}</li>
+        <li>Valor final: R$ {{ emprestimo.valor_final }}</li>
+        <li>Juros mensal: {{ emprestimo.taxa_juros_mensal }}</li>
+        <li>Juros anual: {{ emprestimo.juros_anual }}</li>
+        <li>Situação: {{ emprestimo.situacao }}</li>
+        <li>Parcelas pagas: {{ emprestimo.parcelas_pagas }}/{{ emprestimo.quantidade_parcelas }}</li>
+        <li>Valor restante: R$ {{ emprestimo.valor_restante }}</li>
+    </ul>
+
+    <h2>Parcelas</h2>
+
+    <ul>
+        {% for parcela in emprestimo.parcelas %}
+            <li>
+                #{{ parcela.numero }} — R$ {{ parcela.valor }}
+                — vencimento {{ parcela.data_vencimento }}
+                —
+                {% if parcela.paga %}
+                    paga
+                {% else %}
+                    <form
+                        method="POST"
+                        action="{{ url_for('emprestimo.pagar', emprestimo_id=emprestimo.id, numero_parcela=parcela.numero) }}"
+                        style="display: inline;"
+                    >
+                        <button type="submit">Marcar como paga</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{{ url_for('emprestimo.listar') }}">Voltar para a lista</a></p>
+
+</body>
+</html>
