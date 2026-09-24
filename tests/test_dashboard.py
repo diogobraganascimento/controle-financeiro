@@ -103,3 +103,35 @@ def test_pagina_inicial_deve_exibir_o_resumo(app):
         assert resposta.status_code == 200
         assert "Resumo Financeiro" in resposta.get_data(as_text=True)
         assert "Saldo atual" in resposta.get_data(as_text=True)
+
+def test_resumo_considerar_valor_comprometido_com_emprestimo(app):
+    """
+    Verifica se o resumo financeiro soma corretamente o valor das parcelas de empréstimo ainda não pagas.
+    """
+
+    from app.domain.emprestimo import Emprestimo as EmprestimoDomain
+    from app.mappers.emprestimo_mapper import to_model as emprestimo_to_model
+
+    emprestimo = EmprestimoDomain(
+        descricao="Empréstimo pessoal",
+        valor_retirado=Decimal("5000.00"),
+        taxa_juros_mensal=Decimal("0.02"),
+        quantidade_parcelas=3,
+        data_contratacao=date(2026, 9, 1),
+    )
+
+    modelo = emprestimo_to_model(emprestimo)
+
+    db.session.add(modelo)
+    db.session.commit()
+
+    # Marca a primeira parcela como paga, para confirmar que ela não entra na soma do valor comprometido.
+    modelo.parcelas[0].paga = True
+    db.session.commit()
+
+    resumo = obter_resumo_financeiro()
+
+    valor_esperado = emprestimo.valor_parcela * 2 # 2 parcelas em aberto
+
+    assert resumo["total_emprestimos"] == 1
+    assert resumo["valor_comprometido_emprestimos"] == valor_esperado

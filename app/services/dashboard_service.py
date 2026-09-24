@@ -11,6 +11,8 @@ from sqlalchemy import func
 from app.extensions import db
 from app.models.categoria import Categoria as CategoriaModel
 from app.models.transacao import Transacao as TransacaoModel
+from app.models.emprestimo import Emprestimo as EmprestimoModel
+from app.models.parcela import Parcela as ParcelaModel
 
 
 def _somar_transacoes(tipo: str) -> Decimal:
@@ -28,6 +30,19 @@ def _somar_transacoes(tipo: str) -> Decimal:
     # (nenhuma transação daquele tipo ainda foi cadastrada).
     return resultado if resultado is not None else Decimal("0")
 
+def _somar_parcelas_nao_pagas() -> Decimal:
+    """
+    Retorna a soma do valor de todas as parcelas de empréstimo ainda não pagas, de todos os empréstimos cadastrados. Retorna 0 se não houver nenhuma parcela em aberto.
+    """
+
+    resultado = (
+        db.session.query(func.sum(ParcelaModel.valor))
+        .filter_by(paga=False)
+        .scalar()
+    )
+
+    return resultado if resultado is not None else Decimal("0")
+
 def obter_resumo_financeiro() -> dict:
     """
     Retorna um resumo com os indicadores principais do dashboard: total de crédito, total de débitos, saldo atual e quantidade de categorias cadastradas.
@@ -40,9 +55,17 @@ def obter_resumo_financeiro() -> dict:
         func.count(CategoriaModel.id)
     ).scalar()
 
+    total_emprestimos = db.session.query(
+        func.count(EmprestimoModel.id)
+    ).scalar()
+
+    valor_comprometido_emprestimos = _somar_parcelas_nao_pagas()
+
     return {
         "total_creditos": total_creditos,
         "total_debitos": total_debitos,
         "saldo": total_creditos - total_debitos,
         "total_categorias": total_categorias,
+        "total_emprestimos": total_emprestimos,
+        "valor_comprometido_emprestimos": valor_comprometido_emprestimos,
     }

@@ -18,6 +18,8 @@
         <li>Total de créditos: R$ {{ resumo.total_creditos }}</li>
         <li>Total de débitos: R$ {{ resumo.total_debitos }}</li>
         <li>Categorias cadastradas: {{ resumo.total_categorias }}</li>
+        <li>Empréstimos cadastrados: {{ resumo.total_emprestimos }}</li>
+        <li>Valor comprometido com empréstimos: R$ {{ resumo.valor_comprometido_emprestimos }}</li>
     </ul>
 
     <h2>Navegação</h2>
@@ -26,6 +28,7 @@
         <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
         <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
         <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+        <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
     </ul>
 
 </body>
