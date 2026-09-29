@@ -11,6 +11,10 @@
 
     <p>Bem-vindo ao seu sistema de controle financeiro.</p>
 
+    <form method="POST" action="{{ url_for('auth.logout') }}" style="display: inline;">
+        <button type="submit">Sair</button>
+    </form>
+
     <h2>Resumo Financeiro</h2>
 
     <ul>

@@ -20,3 +20,10 @@ class Config:
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Usada pelo Flask para assinar o cookie de sessão (login).
+    # Em desenvolvimento, um valor fixo é aceitável; antes de qualquer deploy, isso deve vir de uma variável
+    # de ambiente secreta, nunca ficar hardcoded no código-fonte.
+    SECRET_KEY = os.environ.get(
+        "SECRET_KEY", "chave-de-desenvolvimento-trocar-antes-do-deploy"
+    )

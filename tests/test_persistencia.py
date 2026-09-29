@@ -18,8 +18,10 @@ from app.mappers.transacao_mapper import (
 )
 from app.domain.categoria import Categoria as CategoriaDomain
 from app.domain.emprestimo import Emprestimo as EmprestimoDomain
+from app.domain.usuario import Usuario as UsuarioDomain
 from app.mappers.categoria_mapper import to_model as categoria_to_model
 from app.mappers.emprestimo_mapper import to_model as emprestimo_to_model
+from app.mappers.usuario_mapper import to_model as usuario_to_model
 from app.models.categoria import Categoria
 from app.models.emprestimo import Emprestimo as EmprestimoModel
 
@@ -291,3 +293,24 @@ def test_excluir_emprestimo_deve_excluir_suas_parcelas_em_cascata(app):
     )
 
     assert parcelas_restantes == 0
+
+def test_nao_deve_permitir_username_duplicado(app):
+    """
+    Verifcia se o banco rejeita dois usuário com o mesmo username.
+    """
+
+    usuario1 = usuario_to_model(
+        UsuarioDomain.criar(username="dnascimento", senha="senha1234")
+    )
+    db.session.add(usuario1)
+    db.session.commit()
+
+    usuario2 = usuario_to_model(
+        UsuarioDomain.criar(username="dnascimento", senha="outrasenha")
+    )
+    db.session.add(usuario2)
+
+    with pytest.raises(IntegrityError):
+        db.session.commit()
+
+    db.session.rollback()
