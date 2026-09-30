@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
-<body>
+<body class="login-page">
 
-    <h1>Login</h1>
+    <div class="card login-card">
 
-    {% if erro %}
-        <p style="color: red;">{{ erro }}</p>
-    {% endif %}
+        <h1>Controle Financeiro</h1>
 
-    <form method="POST" action="{{ url_for('auth.login') }}">
-        <label for="username">Usuário:</label>
-        <input type="text" id="username" name="username" value="{{ username }}">
-        <br>
+        {% if erro %}
+            <p class="alert-error">{{ erro }}</p>
+        {% endif %}
 
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha">
-        <br>
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="username" value="{{ username }}">
+            </div>
 
-        <button type="submit">Entrar</button>
-    </form>
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Entrar</button>
+        </form>
+
+    </div>
 
 </body>
 </html>

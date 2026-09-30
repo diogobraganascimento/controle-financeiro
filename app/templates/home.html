@@ -3,37 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>{{ nome_sistema }}</h1>
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">{{ nome_sistema }}</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
+        </ul>
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
 
-    <p>Bem-vindo ao seu sistema de controle financeiro.</p>
+    <div class="container">
 
-    <form method="POST" action="{{ url_for('auth.logout') }}" style="display: inline;">
-        <button type="submit">Sair</button>
-    </form>
+        <h1>Resumo Financeiro</h1>
 
-    <h2>Resumo Financeiro</h2>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-card__label">Saldo atual</div>
+                <div class="stat-card__value {% if resumo.saldo >= 0 %}stat-card__value--positive{% else %}stat-card__value--negative{% endif %}">
+                    R$ {{ resumo.saldo }}
+                </div>
+            </div>
 
-    <ul>
-        <li>Saldo atual: R$ {{ resumo.saldo }}</li>
-        <li>Total de créditos: R$ {{ resumo.total_creditos }}</li>
-        <li>Total de débitos: R$ {{ resumo.total_debitos }}</li>
-        <li>Categorias cadastradas: {{ resumo.total_categorias }}</li>
-        <li>Empréstimos cadastrados: {{ resumo.total_emprestimos }}</li>
-        <li>Valor comprometido com empréstimos: R$ {{ resumo.valor_comprometido_emprestimos }}</li>
-    </ul>
+            <div class="stat-card">
+                <div class="stat-card__label">Total de créditos</div>
+                <div class="stat-card__value stat-card__value--positive">R$ {{ resumo.total_creditos }}</div>
+            </div>
 
-    <h2>Navegação</h2>
+            <div class="stat-card">
+                <div class="stat-card__label">Total de débitos</div>
+                <div class="stat-card__value stat-card__value--negative">R$ {{ resumo.total_debitos }}</div>
+            </div>
 
-    <ul>
-        <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
-        <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
-        <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
-        <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
-    </ul>
+            <div class="stat-card">
+                <div class="stat-card__label">Categorias cadastradas</div>
+                <div class="stat-card__value">{{ resumo.total_categorias }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card__label">Empréstimos cadastrados</div>
+                <div class="stat-card__value">{{ resumo.total_emprestimos }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card__label">Comprometido com empréstimos</div>
+                <div class="stat-card__value stat-card__value--negative">R$ {{ resumo.valor_comprometido_emprestimos }}</div>
+            </div>
+        </div>
+
+    </div>
 
 </body>
 </html>
