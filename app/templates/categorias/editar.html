@@ -3,35 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Editar Categoria - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>Editar Categoria</h1>
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">Controle Financeiro</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
+        </ul>
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
 
-    {% if erro %}
-        <p style="color: red;">{{ erro }}</p>
-    {% endif %}
+    <div class="container">
 
-    <form
-        method="POST"
-        action="{{ url_for('categoria.editar', categoria_id=categoria_id) }}"
-    >
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" value="{{ nome }}">
-        <br>
+        <h1>Editar Categoria</h1>
 
-        <label for="tipo">Tipo:</label>
-        <select id="tipo" name="tipo">
-            <option value="credito" {% if tipo == "credito" %}selected{% endif %}>Crédito</option>
-            <option value="debito" {% if tipo == "debito" %}selected{% endif %}>Débito</option>
-        </select>
-        <br>
+        {% if erro %}
+            <p class="alert-error">{{ erro }}</p>
+        {% endif %}
 
-        <button type="submit">Salvar</button>
-    </form>
+        <div class="card">
+            <form method="POST" action="{{ url_for('categoria.editar', categoria_id=categoria_id) }}">
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" value="{{ nome }}">
+                </div>
 
-    <p><a href="{{ url_for('categoria.listar') }}">Voltar para a lista</a></p>
+                <div class="form-group">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" name="tipo">
+                        <option value="credito" {% if tipo == "credito" %}selected{% endif %}>Crédito</option>
+                        <option value="debito" {% if tipo == "debito" %}selected{% endif %}>Débito</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+        </div>
+
+        <p><a href="{{ url_for('categoria.listar') }}">Voltar para a lista</a></p>
+
+    </div>
 
 </body>
 </html>

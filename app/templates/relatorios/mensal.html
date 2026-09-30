@@ -3,41 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Relatório de {{ nome_mes }}/{{ relatorio.ano }} - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>Relatório de {{ nome_mes }} de {{ relatorio.ano }}</h1>
-
-    <ul>
-        <li>Total de créditos: R$ {{ relatorio.total_creditos }}</li>
-        <li>Total de débitos: R$ {{ relatorio.total_debitos }}</li>
-        <li>Saldo do mês: R$ {{ relatorio.saldo }}</li>
-    </ul>
-
-    <h2>Créditos por categoria</h2>
-    {% if relatorio.creditos_por_categoria %}
-        <ul>
-            {% for item in relatorio.creditos_por_categoria %}
-                <li>{{ item.categoria }}: R$ {{ item.total }}</li>
-            {% endfor %}
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">Controle Financeiro</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
         </ul>
-    {% else %}
-        <p>Nenhum crédito neste período.</p>
-    {% endif %}
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
 
-    <h2>Débitos por categoria</h2>
-    {% if relatorio.debitos_por_categoria %}
-        <ul>
-            {% for item in relatorio.debitos_por_categoria %}
-                <li>{{ item.categoria }}: R$ {{ item.total }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhum débito neste período.</p>
-    {% endif %}
+    <div class="container">
 
-    <p><a href="{{ url_for('relatorio.index') }}">Voltar</a></p>
+        <h1>Relatório de {{ nome_mes }} de {{ relatorio.ano }}</h1>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-card__label">Total de créditos</div>
+                <div class="stat-card__value stat-card__value--positive">R$ {{ relatorio.total_creditos }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__label">Total de débitos</div>
+                <div class="stat-card__value stat-card__value--negative">R$ {{ relatorio.total_debitos }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__label">Saldo do mês</div>
+                <div class="stat-card__value {% if relatorio.saldo >= 0 %}stat-card__value--positive{% else %}stat-card__value--negative{% endif %}">
+                    R$ {{ relatorio.saldo }}
+                </div>
+            </div>
+        </div>
+
+        <h2>Créditos por categoria</h2>
+        {% if relatorio.creditos_por_categoria %}
+            <ul class="list">
+                {% for item in relatorio.creditos_por_categoria %}
+                    <li class="list-item">
+                        <span>{{ item.categoria }}</span>
+                        <span>R$ {{ item.total }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum crédito neste período.</p>
+        {% endif %}
+
+        <h2>Débitos por categoria</h2>
+        {% if relatorio.debitos_por_categoria %}
+            <ul class="list">
+                {% for item in relatorio.debitos_por_categoria %}
+                    <li class="list-item">
+                        <span>{{ item.categoria }}</span>
+                        <span>R$ {{ item.total }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum débito neste período.</p>
+        {% endif %}
+
+        <p><a href="{{ url_for('relatorio.index') }}">Voltar</a></p>
+
+    </div>
 
 </body>
 </html>

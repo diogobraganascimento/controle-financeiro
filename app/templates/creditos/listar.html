@@ -3,40 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Créditos - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>Créditos</h1>
-
-    {% if erro %}
-        <p style="color: red;">{{ erro }}</p>
-    {% endif %}
-
-    <p><a href="{{ url_for('credito.nova') }}">Cadastrar novo crédito</a></p>
-
-    {% if transacoes %}
-        <ul>
-            {% for transacao in transacoes %}
-                <li>
-                    {{ transacao.data }} — {{ transacao.descricao }}
-                    — R$ {{ transacao.valor }} — {{ transacao.categoria }}
-                    —
-                    <a href="{{ url_for('credito.editar', transacao_id=transacao.id) }}">Editar</a>
-                    —
-                    <form
-                        method="POST"
-                        action="{{ url_for('credito.excluir', transacao_id=transacao.id) }}"
-                        style="display: inline;"
-                    >
-                        <button type="submit">Excluir</button>
-                    </form>
-                </li>
-            {% endfor %}
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">Controle Financeiro</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
         </ul>
-    {% else %}
-        <p>Nenhum crédito cadastrado ainda.</p>
-    {% endif %}
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
+
+    <div class="container">
+
+        <h1>Créditos</h1>
+
+        {% if erro %}
+            <p class="alert-error">{{ erro }}</p>
+        {% endif %}
+
+        <p><a href="{{ url_for('credito.nova') }}" class="btn btn-primary">Cadastrar novo crédito</a></p>
+
+        {% if transacoes %}
+            <table>
+                <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Categoria</th>
+                    <th></th>
+                </tr>
+                {% for transacao in transacoes %}
+                    <tr>
+                        <td>{{ transacao.data }}</td>
+                        <td>{{ transacao.descricao }}</td>
+                        <td>R$ {{ transacao.valor }}</td>
+                        <td>{{ transacao.categoria }}</td>
+                        <td>
+                            <a href="{{ url_for('credito.editar', transacao_id=transacao.id) }}" class="btn btn-secondary btn-sm">Editar</a>
+                            <form method="POST" action="{{ url_for('credito.excluir', transacao_id=transacao.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>Nenhum crédito cadastrado ainda.</p>
+        {% endif %}
+
+    </div>
 
 </body>
 </html>

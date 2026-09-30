@@ -3,34 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Empréstimos - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>Empréstimos</h1>
-
-    {% if erro %}
-        <p style="color: red;">{{ erro }}</p>
-    {% endif %}
-
-    <p><a href="{{ url_for('emprestimo.novo') }}">Cadastrar novo empréstimo</a></p>
-
-    {% if emprestimos %}
-        <ul>
-            {% for emprestimo in emprestimos %}
-                <li>
-                    <a href="{{ url_for('emprestimo.detalhe', emprestimo_id=emprestimo.id) }}">
-                        {{ emprestimo.descricao }}
-                    </a>
-                    — R$ {{ emprestimo.valor_retirado }}
-                    — {{ emprestimo.parcelas_pagas }}/{{ emprestimo.quantidade_parcelas }} parcelas pagas
-                    — {{ emprestimo.situacao }}
-                </li>
-            {% endfor %}
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">Controle Financeiro</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
         </ul>
-    {% else %}
-        <p>Nenhum empréstimo cadastrado ainda.</p>
-    {% endif %}
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
+
+    <div class="container">
+
+        <h1>Empréstimos</h1>
+
+        {% if erro %}
+            <p class="alert-error">{{ erro }}</p>
+        {% endif %}
+
+        <p><a href="{{ url_for('emprestimo.novo') }}" class="btn btn-primary">Cadastrar novo empréstimo</a></p>
+
+        {% if emprestimos %}
+            <ul class="list">
+                {% for emprestimo in emprestimos %}
+                    <li class="list-item">
+                        <span>
+                            <a href="{{ url_for('emprestimo.detalhe', emprestimo_id=emprestimo.id) }}">
+                                {{ emprestimo.descricao }}
+                            </a>
+                            — R$ {{ emprestimo.valor_retirado }}
+                            — {{ emprestimo.parcelas_pagas }}/{{ emprestimo.quantidade_parcelas }} parcelas pagas
+                        </span>
+                        <span class="badge {% if emprestimo.situacao == 'quitado' %}badge--quitado{% else %}badge--ativo{% endif %}">
+                            {{ emprestimo.situacao }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum empréstimo cadastrado ainda.</p>
+        {% endif %}
+
+    </div>
 
 </body>
 </html>

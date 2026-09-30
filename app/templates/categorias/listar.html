@@ -3,38 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <title>Categorias - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>Categorias</h1>
-
-    {% if erro %}
-        <p style="color: red;">{{ erro }}</p>
-    {% endif %}
-
-    <p><a href="{{ url_for('categoria.nova') }}">Cadastrar nova categoria</a></p>
-
-    {% if categorias %}
-        <ul>
-            {% for categoria in categorias %}
-                <li>
-                    {{ categoria.nome }} ({{ categoria.tipo }})
-                    -
-                    <a href="{{ url_for('categoria.editar', categoria_id=categoria.id) }}">Editar</a>
-                    -
-                    <form
-                        method="POST"
-                        action="{{ url_for('categoria.excluir', categoria_id=categoria.id) }}"
-                        style="display: inline;">
-                        <button type="submit">Excluir</button>
-                    </form>
-                </li>
-            {% endfor %}
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">Controle Financeiro</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
         </ul>
-    {% else %}
-        <p>Nenhuma categoria cadastrada ainda.</p>
-    {% endif %}
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
+
+    <div class="container">
+
+        <h1>Categorias</h1>
+
+        {% if erro %}
+            <p class="alert-error">{{ erro }}</p>
+        {% endif %}
+
+        <p><a href="{{ url_for('categoria.nova') }}" class="btn btn-primary">Cadastrar nova categoria</a></p>
+
+        {% if categorias %}
+            <ul class="list">
+                {% for categoria in categorias %}
+                    <li class="list-item">
+                        <span>
+                            {{ categoria.nome }}
+                            <span class="badge {% if categoria.tipo == 'credito' %}badge--quitado{% else %}badge--ativo{% endif %}">
+                                {{ categoria.tipo }}
+                            </span>
+                        </span>
+                        <span>
+                            <a href="{{ url_for('categoria.editar', categoria_id=categoria.id) }}" class="btn btn-secondary btn-sm">Editar</a>
+                            <form method="POST" action="{{ url_for('categoria.excluir', categoria_id=categoria.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma categoria cadastrada ainda.</p>
+        {% endif %}
+
+    </div>
 
 </body>
 </html>

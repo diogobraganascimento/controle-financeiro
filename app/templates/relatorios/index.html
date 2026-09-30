@@ -3,36 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>Relatórios - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>Relatórios</h1>
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">Controle Financeiro</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
+        </ul>
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
 
-    <h2>Relatório Mensal</h2>
-    <form method="GET" action="{{ url_for('relatorio.mensal') }}">
-        <label for="mes">Mês:</label>
-        <select id="mes" name="mes">
-            {% for i in range(1, 13) %}
-                <option value="{{ i }}" {% if i == mes_atual %}selected{% endif %}>
-                    {{ meses[i - 1] }}
-                </option>
-            {% endfor %}
-        </select>
+    <div class="container">
 
-        <label for="ano">Ano:</label>
-        <input type="number" id="ano" name="ano" value="{{ ano_atual }}">
+        <h1>Relatórios</h1>
 
-        <button type="submit">Ver relatório</button>
-    </form>
+        <div class="card">
+            <h2>Relatório Mensal</h2>
+            <form method="GET" action="{{ url_for('relatorio.mensal') }}">
+                <div class="form-group">
+                    <label for="mes">Mês</label>
+                    <select id="mes" name="mes">
+                        {% for i in range(1, 13) %}
+                            <option value="{{ i }}" {% if i == mes_atual %}selected{% endif %}>
+                                {{ meses[i - 1] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-    <h2>Relatório Anual</h2>
-    <form method="GET" action="{{ url_for('relatorio.anual') }}">
-        <label for="ano_anual">Ano:</label>
-        <input type="number" id="ano_anual" name="ano" value="{{ ano_atual }}">
+                <div class="form-group">
+                    <label for="ano">Ano</label>
+                    <input type="number" id="ano" name="ano" value="{{ ano_atual }}">
+                </div>
 
-        <button type="submit">Ver relatório</button>
-    </form>
+                <button type="submit" class="btn btn-primary">Ver relatório</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Relatório Anual</h2>
+            <form method="GET" action="{{ url_for('relatorio.anual') }}">
+                <div class="form-group">
+                    <label for="ano_anual">Ano</label>
+                    <input type="number" id="ano_anual" name="ano" value="{{ ano_atual }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Ver relatório</button>
+            </form>
+        </div>
+
+    </div>
 
 </body>
 </html>

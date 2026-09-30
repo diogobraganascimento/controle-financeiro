@@ -3,47 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ emprestimo.descricao }} - Controle Financeiro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>{{ emprestimo.descricao }}</h1>
+    <nav class="navbar">
+        <a class="navbar__brand" href="{{ url_for('home.home') }}">Controle Financeiro</a>
+        <ul class="navbar__links">
+            <li><a href="{{ url_for('categoria.listar') }}">Categorias</a></li>
+            <li><a href="{{ url_for('credito.listar') }}">Créditos</a></li>
+            <li><a href="{{ url_for('debito.listar') }}">Débitos</a></li>
+            <li><a href="{{ url_for('emprestimo.listar') }}">Empréstimos</a></li>
+            <li><a href="{{ url_for('relatorio.index') }}">Relatórios</a></li>
+        </ul>
+        <form method="POST" action="{{ url_for('auth.logout') }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Sair</button>
+        </form>
+    </nav>
 
-    <ul>
-        <li>Valor retirado: R$ {{ emprestimo.valor_retirado }}</li>
-        <li>Valor da parcela: R$ {{ emprestimo.valor_parcela }}</li>
-        <li>Valor final: R$ {{ emprestimo.valor_final }}</li>
-        <li>Juros mensal: {{ emprestimo.taxa_juros_mensal }}</li>
-        <li>Juros anual: {{ emprestimo.juros_anual }}</li>
-        <li>Situação: {{ emprestimo.situacao }}</li>
-        <li>Parcelas pagas: {{ emprestimo.parcelas_pagas }}/{{ emprestimo.quantidade_parcelas }}</li>
-        <li>Valor restante: R$ {{ emprestimo.valor_restante }}</li>
-    </ul>
+    <div class="container">
 
-    <h2>Parcelas</h2>
+        <h1>{{ emprestimo.descricao }}</h1>
 
-    <ul>
-        {% for parcela in emprestimo.parcelas %}
-            <li>
-                #{{ parcela.numero }} — R$ {{ parcela.valor }}
-                — vencimento {{ parcela.data_vencimento }}
-                —
-                {% if parcela.paga %}
-                    paga
-                {% else %}
-                    <form
-                        method="POST"
-                        action="{{ url_for('emprestimo.pagar', emprestimo_id=emprestimo.id, numero_parcela=parcela.numero) }}"
-                        style="display: inline;"
-                    >
-                        <button type="submit">Marcar como paga</button>
-                    </form>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-card__label">Valor retirado</div>
+                <div class="stat-card__value">R$ {{ emprestimo.valor_retirado }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__label">Valor da parcela</div>
+                <div class="stat-card__value">R$ {{ emprestimo.valor_parcela }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__label">Valor final</div>
+                <div class="stat-card__value">R$ {{ emprestimo.valor_final }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__label">Juros mensal</div>
+                <div class="stat-card__value">{{ emprestimo.taxa_juros_mensal }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__label">Juros anual</div>
+                <div class="stat-card__value">{{ emprestimo.juros_anual }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__label">Valor restante</div>
+                <div class="stat-card__value stat-card__value--negative">R$ {{ emprestimo.valor_restante }}</div>
+            </div>
+        </div>
 
-    <p><a href="{{ url_for('emprestimo.listar') }}">Voltar para a lista</a></p>
+        <p>
+            <span class="badge {% if emprestimo.situacao == 'quitado' %}badge--quitado{% else %}badge--ativo{% endif %}">
+                {{ emprestimo.situacao }}
+            </span>
+            — {{ emprestimo.parcelas_pagas }}/{{ emprestimo.quantidade_parcelas }} parcelas pagas
+        </p>
+
+        <h2>Parcelas</h2>
+
+        <table>
+            <tr>
+                <th>Parcela</th>
+                <th>Valor</th>
+                <th>Vencimento</th>
+                <th></th>
+            </tr>
+            {% for parcela in emprestimo.parcelas %}
+                <tr>
+                    <td>#{{ parcela.numero }}</td>
+                    <td>R$ {{ parcela.valor }}</td>
+                    <td>{{ parcela.data_vencimento }}</td>
+                    <td>
+                        {% if parcela.paga %}
+                            <span class="badge badge--quitado">paga</span>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('emprestimo.pagar', emprestimo_id=emprestimo.id, numero_parcela=parcela.numero) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-primary btn-sm">Marcar como paga</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <p><a href="{{ url_for('emprestimo.listar') }}">Voltar para a lista</a></p>
+
+    </div>
 
 </body>
 </html>
