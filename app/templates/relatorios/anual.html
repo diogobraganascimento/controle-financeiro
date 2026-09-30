@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Anual de {{ relatorio.ano }} - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Relatório Anual de {{ relatorio.ano }}</h1>
+
+    <ul>
+        <li>Total de créditos no ano: R$ {{ relatorio.total_creditos }}</li>
+        <li>Total de débitos no ano: R$ {{ relatorio.total_debitos }}</li>
+        <li>Saldo do ano: R$ {{ relatorio.saldo }}</li>
+    </ul>
+
+    <h2>Por mês</h2>
+    <table border="1">
+        <tr>
+            <th>Mês</th>
+            <th>Créditos</th>
+            <th>Débitos</th>
+            <th>Saldo</th>
+        </tr>
+        {% for i in range(12) %}
+            <tr>
+                <td>{{ meses[i] }}</td>
+                <td>R$ {{ relatorio.creditos_mensais[i] }}</td>
+                <td>R$ {{ relatorio.debitos_mensais[i] }}</td>
+                <td>R$ {{ relatorio.saldos_mensais[i] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Créditos por categoria (ano inteiro)</h2>
+    {% if relatorio.creditos_por_categoria %}
+        <ul>
+            {% for item in relatorio.creditos_por_categoria %}
+                <li>{{ item.categoria }}: R$ {{ item.total }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum crédito neste ano.</p>
+    {% endif %}
+
+    <h2>Débitos por categoria (ano inteiro)</h2>
+    {% if relatorio.debitos_por_categoria %}
+        <ul>
+            {% for item in relatorio.debitos_por_categoria %}
+                <li>{{ item.categoria }}: R$ {{ item.total }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum débito neste ano.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('relatorio.index') }}">Voltar</a></p>
+
+</body>
+</html>

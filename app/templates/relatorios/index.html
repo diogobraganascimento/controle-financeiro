@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Relatórios</h1>
+
+    <h2>Relatório Mensal</h2>
+    <form method="GET" action="{{ url_for('relatorio.mensal') }}">
+        <label for="mes">Mês:</label>
+        <select id="mes" name="mes">
+            {% for i in range(1, 13) %}
+                <option value="{{ i }}" {% if i == mes_atual %}selected{% endif %}>
+                    {{ meses[i - 1] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="ano">Ano:</label>
+        <input type="number" id="ano" name="ano" value="{{ ano_atual }}">
+
+        <button type="submit">Ver relatório</button>
+    </form>
+
+    <h2>Relatório Anual</h2>
+    <form method="GET" action="{{ url_for('relatorio.anual') }}">
+        <label for="ano_anual">Ano:</label>
+        <input type="number" id="ano_anual" name="ano" value="{{ ano_atual }}">
+
+        <button type="submit">Ver relatório</button>
+    </form>
+
+</body>
+</html>

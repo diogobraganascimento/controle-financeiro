@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de {{ nome_mes }}/{{ relatorio.ano }} - Controle Financeiro</title>
+</head>
+
+<body>
+
+    <h1>Relatório de {{ nome_mes }} de {{ relatorio.ano }}</h1>
+
+    <ul>
+        <li>Total de créditos: R$ {{ relatorio.total_creditos }}</li>
+        <li>Total de débitos: R$ {{ relatorio.total_debitos }}</li>
+        <li>Saldo do mês: R$ {{ relatorio.saldo }}</li>
+    </ul>
+
+    <h2>Créditos por categoria</h2>
+    {% if relatorio.creditos_por_categoria %}
+        <ul>
+            {% for item in relatorio.creditos_por_categoria %}
+                <li>{{ item.categoria }}: R$ {{ item.total }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum crédito neste período.</p>
+    {% endif %}
+
+    <h2>Débitos por categoria</h2>
+    {% if relatorio.debitos_por_categoria %}
+        <ul>
+            {% for item in relatorio.debitos_por_categoria %}
+                <li>{{ item.categoria }}: R$ {{ item.total }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum débito neste período.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('relatorio.index') }}">Voltar</a></p>
+
+</body>
+</html>
