@@ -60,7 +60,56 @@
             </div>
         </div>
 
+        <h2>Gráficos</h2>
+
+        <div class="chart-grid">
+            <div class="card">
+                <h3>Créditos vs Débitos</h3>
+                <canvas id="graficoComposicao"></canvas>
+            </div>
+
+            <div class="card">
+                <h3>Evolução do saldo (6 meses)</h3>
+                <canvas id="graficoEvolucao"></canvas>
+            </div>
+        </div>
+
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script>
+        const dadosGrafico = {{ grafico | tojson }};
+
+        new Chart(document.getElementById('graficoComposicao'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Créditos', 'Débitos'],
+                datasets: [{
+                    data: [dadosGrafico.composicao.creditos, dadosGrafico.composicao.debitos],
+                    backgroundColor: ['#16a34a', '#dc2626'],
+                }],
+            },
+            options: {
+                plugins: { legend: { position: 'bottom' } },
+            },
+        });
+
+        new Chart(document.getElementById('graficoEvolucao'), {
+            type: 'bar',
+            data: {
+                labels: dadosGrafico.evolucao.labels,
+                datasets: [{
+                    label: 'Saldo (R$)',
+                    data: dadosGrafico.evolucao.valores,
+                    backgroundColor: '#2563eb',
+                }],
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: false } },
+            },
+        });
+    </script>
 
 </body>
 </html>

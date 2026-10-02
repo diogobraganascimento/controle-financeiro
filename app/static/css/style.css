@@ -328,3 +328,22 @@ th {
     width: 100%;
     max-width: 360px;
 }
+
+/* ---------- Gráficos ---------- */
+
+h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-md);
+}
+
+.char-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minimax(320max, 1fr));
+    gap: var(--space-md);
+    margin-botton: var(--space-xl);
+}
+
+.char-grid canvas {
+    max-width: 100%;
+}

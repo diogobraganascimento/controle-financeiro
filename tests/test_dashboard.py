@@ -10,6 +10,13 @@ import pytest
 from app import create_app
 from app.extensions import db
 from app.services.dashboard_service import obter_resumo_financeiro
+from app.services.dashboard_service import obter_evolucao_mensal
+from app.domain.categoria import Categoria as CategoriaDomain
+from app.domain.credito import Credito
+from app.domain.debito import Debito
+from app.mappers.categoria_mapper import to_model as categoria_to_model
+from app.mappers.transacao_mapper import to_model as transacao_to_model
+from app.services.dashboard_service import obter_evolucao_mensal
 
 
 @pytest.fixture
@@ -135,3 +142,87 @@ def test_resumo_considerar_valor_comprometido_com_emprestimo(app):
 
     assert resumo["total_emprestimos"] == 1
     assert resumo["valor_comprometido_emprestimos"] == valor_esperado
+
+def test_evolucao_mensal_deve_ter_o_tamanho_pedido(app):
+    """
+    Verifica se a evolução mensal retorna a quantidade de meses
+    solicitada, com os rótulos corretos.
+    """
+
+    evolucao = obter_evolucao_mensal(meses=6, data_referencia=date(2026, 10, 15))
+
+    assert len(evolucao) == 6
+    assert evolucao[0]["label"] == "Mai/2026"
+    assert evolucao[-1]["label"] == "Out/2026"
+
+def test_evolucao_mensal_deve_distribuir_saldo_por_mes(app):
+    """
+    Verifica se a evolução mensal calcula corretamente o saldo
+    de cada mês, inclusive meses sem nenhuma transação.
+    """
+
+    categoria_credito = categoria_to_model(
+        CategoriaDomain(nome="Salário", tipo="credito")
+    )
+    categoria_debito = categoria_to_model(
+        CategoriaDomain(nome="Moradia", tipo="debito")
+    )
+    db.session.add(categoria_credito)
+    db.session.add(categoria_debito)
+    db.session.commit()
+
+    db.session.add(
+        transacao_to_model(
+            Credito(
+                descricao="Salário",
+                valor=Decimal("5000.00"),
+                data=date(2026, 9, 5),
+                categoria="Salário"
+            )
+        )
+    )
+    db.session.add(
+        transacao_to_model(
+            Debito(
+                descricao="Aluguel",
+                valor=Decimal("1800.00"),
+                data=date(2026, 9, 10),
+                categoria="Moradia",
+            )
+        )
+    )
+    db.session.add(
+    transacao_to_model(
+        Credito(
+            descricao="Salário",
+            valor=Decimal("5000.00"),
+            data=date(2026, 10, 5),
+            categoria="Salário",
+        )    
+    )
+    )
+    db.session.commit()
+
+    evolucao = obter_evolucao_mensal(meses=3, data_referencia=date(2026, 10, 15))
+
+    assert len(evolucao) == 3
+    assert evolucao[0]["label"] == "Ago/2026"
+    assert evolucao[0]["saldo"] == Decimal("0")
+    assert evolucao[1]["label"] == "Set/2026"
+    assert evolucao[1]["saldo"] == Decimal("3200.00")
+    assert evolucao[2]["label"] == "Out/2026"
+    assert evolucao[2]["saldo"] == Decimal("5000.00")
+
+def test_pagina_inicial_deve_incluir_graficos(app):
+    """
+    Verifica se a página inicial carrega o Chart.js e os
+    elementos canvas dos gráficos.
+    """
+
+    with app.test_client() as client:
+        resposta = client.get("/")
+
+        conteudo = resposta.get_data(as_text=True)
+        assert "graficoComposicao" in conteudo
+        assert "graficoEvolucao" in conteudo
+        assert "Chart.js" in conteudo or "chart.umd" in conteudo

@@ -2,34 +2,34 @@
 
 Aplicação web para controle financeiro pessoal, desenvolvida com Python e Flask.
 
-O projeto está sendo construído de forma incremental, aplicando princípios de Programação Orientada a Objetos, testes automatizados, organização em camadas e boas práticas de desenvolvimento.
+O projeto foi construído de forma incremental, em pareceria com um assistente de IA (Claude, da Anthropic), aplicando princípios de Programação Orientada a Objetos, testes automatizados, organização em camadas e boas práticas de desenvolvimento. Veja a seção **Sobre o desenvolvimento** para mais detalhes sobre essa metodologia.
 
 ## Objetivo
 
-A aplicação terá como objetivo permitir o gerenciamento e acompanhamento da vida financeira, incluindo:
+Permitir o gerenciamento e acompanhamento completo da vida financeira pessoal:
 
-- Créditos;
-- Débitos;
-- Categorias;
-- Empréstimos;
-- Parcelas;
-- Dashboard financeiro;
-- Comprovantes e documentos associados às movimentações.
+- Créditos e débitos, organizados por categoria;
+- Empréstimos com cálculo automático de parcelas (Sistema Price);
+- Dashboard com saldo e indicadores consolidados;
+- Relatórios financeiros mensais e anuais;
+- Autenticação e proteção de acesso.
+
+Investimentos, autenticação em duas etapas (2FA) e deploy em produção são evoluções futuras planejadas.
 
 ## Tecnologias
 
 - Python 3.14
 - Flask
 - Flask-SQLAlchemy
+- Flask-Login
+- Werkzeug (hash de senha)
 - pytest
 - SQLite
-- HTML
-- CSS
-- JavaScript
-- Git
-- GitHub
+- HTML, CSS (folha de estilo própria, sem frameworks)
+- Jinja2
+- Git / GitHub
 
-## Estrutura Atual
+## Estrutura do Projeto
 
 ```text
 controle-financeiro/
@@ -37,154 +37,142 @@ controle-financeiro/
 │   ├── __init__.py
 │   ├── config.py
 │   ├── extensions.py
+│   ├── security.py
 │   ├── domain/
-│   │   ├── __init__.py
 │   │   ├── transacao.py
 │   │   ├── credito.py
 │   │   ├── debito.py
-│   │   └── categoria.py
+│   │   ├── categoria.py
+│   │   ├── emprestimo.py
+│   │   ├── parcela.py
+│   │   └── usuario.py
 │   ├── models/
-│   │   ├── __init__.py
 │   │   ├── transacao.py
-│   │   └── categoria.py
+│   │   ├── categoria.py
+│   │   ├── emprestimo.py
+│   │   ├── parcela.py
+│   │   └── usuario.py
 │   ├── mappers/
-│   │   ├── __init__.py
 │   │   ├── transacao_mapper.py
-│   │   └── categoria_mapper.py
+│   │   ├── categoria_mapper.py
+│   │   ├── emprestimo_mapper.py
+│   │   └── usuario_mapper.py
+│   ├── services/
+│   │   ├── categoria_service.py
+│   │   ├── transacao_service.py
+│   │   ├── emprestimo_service.py
+│   │   ├── dashboard_service.py
+│   │   ├── relatorio_service.py
+│   │   └── auth_service.py
 │   ├── routes/
-│   │   ├── __init__.py
-│   │   └── home.py
-│   └── templates/
-│       └── home.html
-├── tests/
-│   ├── __init__.py
-│   ├── test_config.py
-│   ├── test_transacao.py
-│   ├── test_credito.py
-│   ├── test_debito.py
-│   ├── test_categoria.py
-│   ├── test_mapper.py
-│   ├── test_categoria_mapper.py
-│   └── test_persistencia.py
+│   │   ├── home.py
+│   │   ├── auth.py
+│   │   ├── categoria.py
+│   │   ├── credito.py
+│   │   ├── debito.py
+│   │   ├── transacao_routes.py     (fábrica de blueprint)
+│   │   ├── emprestimo.py
+│   │   └── relatorio.py
+│   ├── templates/
+│   │   ├── home.html
+│   │   ├── auth/login.html
+│   │   ├── categorias/ (listar, nova, editar)
+│   │   ├── creditos/   (listar, nova, editar)
+│   │   ├── debitos/    (listar, nova, editar)
+│   │   ├── emprestimos/ (listar, novo, detalhe)
+│   │   └── relatorios/ (index, mensal, anual)
+│   └── static/
+│       └── css/style.css
+├── tests/                          (123 testes)
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
 └── run.py
 ```
 
-## Arquitetura: domínio e persistência separados
+## Arquitetura: domínio e persistência separados (Data Mapper)
 
-O projeto segue o padrão **Data Mapper**: cada conceito de negócio (`Transacao`, `Credito`, `Debito`, `Categoria`) existe em duas formas independentes:
+Cada conceito de negócio existe em até três formas independentes:
 
-- **`app/domain/`** — entidades de domínio, em Python puro, sem nenhuma dependência do banco de dados. Concentram as regras de negócio (validações, cálculos como `impacto_saldo()`). Podem ser testadas sem precisar de banco.
-- **`app/models/`** — modelos SQLAlchemy, responsáveis apenas por como os dados são armazenados (tabelas, colunas, constraints). Não conhecem regras de negócio.
+- **`app/domain/`** — entidades em Python puro, sem nenhuma dependência do banco. Concentram as regras de negócio (validações, cálculos como `impacto_saldo()` e a fórmula do Sistema Price). Testadas sem precisar de banco de dados.
+- **`app/models/`** — modelos SQLAlchemy, responsáveis apenas por como os dados são armazenados (tabelas, colunas, constraints, relacionamentos).
 - **`app/mappers/`** — funções `to_model()` e `to_domain()` que convertem entre as duas representações.
-
-Essa separação evita que a lógica de negócio dependa do banco de dados, e mantém os testes de domínio rápidos e independentes de infraestrutura.
+- **`app/services/`** — orquestram casos de uso completos (criar, listar, atualizar, excluir), conectando domínio, mapper e persistência. É a camada que as rotas Flask chamam — elas nunca falam diretamente com o banco.
 
 ### Hierarquia de domínio
 
 ```text
 Transacao
-├── Credito
-└── Debito
+├── Credito   (impacto positivo no saldo)
+└── Debito    (impacto negativo no saldo)
+
+Emprestimo  — composição com uma lista de Parcela
+Categoria   — entidade independente (nome + tipo)
+Usuario     — senha sempre armazenada como hash (nunca texto puro)
 ```
 
-`Credito` e `Debito` herdam de `Transacao` e implementam `impacto_saldo()` de forma polimórfica (positivo para crédito, negativo para débito). Cada uma também expõe a propriedade `tipo` (`"credito"` ou `"debito"`), usada pelo mapper para reconstruir o objeto correto ao ler do banco.
+## Módulos
 
-`Categoria` é uma entidade independente, com `nome` e `tipo` (`"credito"` ou `"debito"`), usada para classificar transações.
+### Categorias
+CRUD completo (criar, listar, editar, excluir), com `tipo` (`credito`/`debito`) e restrição de unicidade por nome+tipo.
 
-## Validações de domínio
+### Créditos e Débitos
+CRUD completo, vinculados a uma `Categoria` real via chave estrangeira (`categoria_id`). As rotas de Crédito e Débito compartilham a mesma fábrica de blueprint (`criar_blueprint_transacao`), evitando duplicação de código entre as duas.
 
-### Transação (Crédito e Débito)
+### Empréstimos
+Calculados pelo **Sistema Price** (parcelas fixas): o valor da parcela, o valor final e a lista completa de parcelas são gerados automaticamente a partir do valor retirado, da taxa de juros mensal e da quantidade de parcelas. Cada parcela pode ser marcada como paga individualmente. `Emprestimo` e `Parcela` têm uma relação um-para-muitos com exclusão em cascata (`cascade="all, delete-orphan"`).
 
-- A descrição é obrigatória e não pode conter apenas espaços;
-- A categoria é obrigatória e não pode conter apenas espaços;
-- O valor deve ser um `Decimal` maior que zero;
-- A data deve ser um objeto `date`;
-- O comprovante é opcional, mas se informado deve ser uma `str`;
-- Espaços externos em descrição e categoria são removidos automaticamente.
+### Dashboard
+Página inicial com saldo atual, totais de crédito/débito e valor comprometido com empréstimos em aberto, calculados com funções de agregação SQL (`SUM`, `COUNT`).
 
-### Categoria
+### Relatórios
+Relatório mensal e anual, com totais e agrupamento por categoria, usando `GROUP BY` e `extract()` para filtrar por período.
 
-- O nome é obrigatório e não pode conter apenas espaços;
-- O tipo deve ser `"credito"` ou `"debito"`;
-- Espaços externos no nome são removidos automaticamente.
+### Autenticação
+Sistema de usuário único (Flask-Login), com senha sempre hasheada (`werkzeug.security`). Todas as rotas exigem login, exceto `/login`. O usuário é criado via comando de terminal (`flask criar-usuario`), sem cadastro público.
 
 ## Persistência
 
-A aplicação utiliza **SQLite** como banco de dados, acessado através do **SQLAlchemy** (na sintaxe declarativa tipada, com `Mapped` e `mapped_column`).
+**SQLite**, acessado via SQLAlchemy (sintaxe declarativa tipada, `Mapped`/`mapped_column`). Integridade garantida pelo próprio banco:
 
-Regras de integridade garantidas pelo próprio banco:
-
-- `transacoes.tipo` só aceita `"credito"` ou `"debito"` (`CheckConstraint`);
-- `categorias.tipo` só aceita `"credito"` ou `"debito"` (`CheckConstraint`);
-- não é permitido cadastrar duas categorias com o mesmo nome e o mesmo tipo (`UniqueConstraint`).
-
-## Programação Orientada a Objetos
-
-O projeto está sendo desenvolvido para aplicar conceitos de POO na prática, incluindo:
-
-- Classes e objetos;
-- Atributos;
-- Métodos;
-- Encapsulamento;
-- `@property`;
-- Herança;
-- Abstração;
-- Polimorfismo.
+- `transacoes.tipo` e `categorias.tipo` só aceitam `"credito"` ou `"debito"` (`CheckConstraint`);
+- Não é permitido cadastrar duas categorias com o mesmo nome e tipo (`UniqueConstraint`);
+- `transacoes.categoria_id` e `parcelas.emprestimo_id` são chaves estrangeiras reais;
+- Excluir um empréstimo exclui automaticamente suas parcelas.
 
 ## Testes
-
-Os testes automatizados são executados utilizando `pytest`.
-
-Para executar a suíte:
-
-```bash
-pytest
-```
-
-Para executar com mais detalhes (nome de cada teste):
 
 ```bash
 pytest -v
 ```
 
-A suíte cobre:
-
-- Regras de negócio do domínio (`Transacao`, `Credito`, `Debito`, `Categoria`);
-- Conversão entre domínio e persistência (`mappers`);
-- Gravação e leitura no banco de dados, incluindo violações de integridade (`test_persistencia.py`);
-- Configuração da aplicação (`test_config.py`).
+**123 testes**, cobrindo domínio, mappers, persistência, serviços e rotas HTTP (incluindo autenticação, com um arquivo dedicado que reativa a proteção de login para validá-la de verdade).
 
 ## Execução
-
-Com o ambiente virtual ativado:
 
 ```bash
 python run.py
 ```
 
-A aplicação Flask estará disponível em:
+Antes do primeiro acesso, crie o usuário do sistema:
 
-```text
-http://127.0.0.1:5000
+```bash
+flask --app run.py criar-usuario seu_username
 ```
+
+A aplicação estará disponível em `http://127.0.0.1:5000`.
+
+## Sobre o desenvolvimento
+
+Este projeto foi construído inteiramente através de pareamento com um assistente de IA (Claude, Anthropic), em um processo iterativo e didático: cada funcionalidade foi precedida de explicação de conceito, seguida de implementação, teste e revisão antes do commit. Erros de código (incluindo erros de digitação introduzidos na hora de transcrever o código) foram depurados em conjunto, como parte do processo de aprendizado. Veja `documentacao_projeto.docx` para mais detalhes sobre essa metodologia.
 
 ## Status
 
-🚧 Em desenvolvimento.
-
-O domínio de Transação (Crédito/Débito) e Categoria já está modelado, testado e persistido em banco SQLite via SQLAlgo. O próximo passo é expor essas entidades através de rotas Flask (CRUD via HTTP).
+🚧 Em desenvolvimento — base funcional completa.
 
 ## Próximos passos
 
-- Criar rotas Flask (CRUD) para Categoria;
-- Criar rotas Flask (CRUD) para Crédito e Débito;
-- Relacionar `Transacao.categoria` à tabela `Categoria` (chave estrangeira);
-- Desenvolver camada de serviços e/ou repositórios, quando justificável;
-- Implementar módulo de Empréstimos e Parcelas;
-- Criar dashboard financeiro;
-- Ampliar cobertura de testes de rotas (integração);
-- Implementar autenticação e segurança;
-- Evoluir posteriormente para PostgreSQL.
+- Autenticação em duas etapas (2FA);
+- Módulo de Investimentos;
+- Melhorias de UX/UI;
+- Deploy em produção.
